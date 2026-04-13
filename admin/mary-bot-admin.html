@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mary Bot — Panel de Administración</title>
+  <title>Mary Bot — Panel Admin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -35,7 +35,62 @@
       min-height: 100vh;
       overflow-x: hidden;
     }
-    /* Sidebar */
+
+    /* ── IRON LOCK — Login Screen ── */
+    #lockScreen {
+      position: fixed; inset: 0;
+      background: radial-gradient(ellipse at center, #1a0a20 0%, #0a0a0f 70%);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 99999; flex-direction: column;
+    }
+    .lock-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 24px; padding: 48px 40px; max-width: 440px; width: 92%;
+      box-shadow: 0 30px 80px rgba(214,51,132,0.15);
+      text-align: center;
+    }
+    .lock-logo { font-size: 64px; margin-bottom: 8px; }
+    .lock-title {
+      font-size: 28px; font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--gold));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+    }
+    .lock-subtitle { font-size: 13px; color: var(--text2); margin-bottom: 32px; }
+    .lock-input {
+      width: 100%; padding: 14px 16px; border-radius: 10px;
+      border: 1px solid var(--border); background: rgba(255,255,255,0.04);
+      color: var(--text); font-size: 15px; font-family: 'JetBrains Mono', monospace;
+      text-align: center; letter-spacing: 2px; margin-bottom: 16px;
+      transition: border-color 0.2s;
+    }
+    .lock-input:focus { outline: none; border-color: var(--accent); }
+    .lock-btn {
+      width: 100%; padding: 14px; border-radius: 10px; border: none;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; font-size: 15px; font-weight: 700; cursor: pointer;
+      transition: opacity 0.2s; font-family: inherit;
+    }
+    .lock-btn:hover { opacity: 0.88; }
+    .lock-error { color: var(--danger); font-size: 13px; margin-top: 12px; min-height: 20px; }
+    .lock-version { color: var(--text3); font-size: 11px; margin-top: 24px; }
+
+    /* ── ADMIN PASSWORD MODAL ── */
+    #modalAdminPw {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+      display: none; align-items: center; justify-content: center;
+      z-index: 10000; backdrop-filter: blur(6px);
+    }
+    #modalAdminPw.open { display: flex; }
+    .admin-pw-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 36px 32px; max-width: 380px; width: 90%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5); text-align: center;
+    }
+    .admin-pw-card h3 { font-size: 18px; margin-bottom: 8px; }
+    .admin-pw-card p { font-size: 12px; color: var(--text2); margin-bottom: 20px; }
+
+    /* ── SIDEBAR ── */
     .sidebar {
       position: fixed; left: 0; top: 0; bottom: 0;
       width: 260px; background: var(--bg2);
@@ -54,10 +109,12 @@
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
     .sidebar-brand p { font-size: 11px; color: var(--text3); margin-top: 4px; }
+    .nav-section { padding: 12px 24px 4px; font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
     .nav-item {
       padding: 12px 24px; display: flex; align-items: center; gap: 12px;
       cursor: pointer; transition: all 0.2s; font-size: 13px; font-weight: 500;
       color: var(--text2); border-left: 3px solid transparent;
+      user-select: none;
     }
     .nav-item:hover { background: rgba(214,51,132,0.08); color: var(--text); }
     .nav-item.active {
@@ -65,26 +122,47 @@
       color: var(--accent); border-left-color: var(--accent);
     }
     .nav-item i { width: 20px; text-align: center; font-size: 14px; }
+    .nav-badge {
+      margin-left: auto; background: var(--accent); color: #fff;
+      font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px;
+    }
     .sidebar-footer {
       margin-top: auto; padding: 16px 24px;
       border-top: 1px solid var(--border);
       font-size: 11px; color: var(--text3); text-align: center;
     }
-    /* Main */
-    .main { margin-left: 260px; padding: 24px; min-height: 100vh; }
-    .page-header {
-      margin-bottom: 24px;
+    .sidebar-user {
+      display: flex; align-items: center; gap: 8px;
+      padding: 12px 24px; margin-bottom: 4px;
+      background: rgba(214,51,132,0.06); border-top: 1px solid var(--border);
     }
+    .sidebar-user-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--gold));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: #fff;
+    }
+    .sidebar-user-name { font-size: 12px; font-weight: 600; }
+    .sidebar-user-role { font-size: 10px; color: var(--text3); }
+
+    /* ── MAIN ── */
+    .main { margin-left: 260px; padding: 24px; min-height: 100vh; }
+    .page-header { margin-bottom: 24px; display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
     .page-header h2 { font-size: 24px; font-weight: 700; }
     .page-header p { color: var(--text2); font-size: 13px; margin-top: 4px; }
-    /* Stats Cards */
+
+    /* ── STATS ── */
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
     .stat-card {
       background: var(--card); border: 1px solid var(--border);
       border-radius: var(--radius); padding: 20px;
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: transform 0.2s, box-shadow 0.2s; position: relative; overflow: hidden;
     }
     .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .stat-card::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+      background: var(--accent-glow, var(--accent)); border-radius: 0 0 var(--radius) var(--radius);
+    }
     .stat-icon {
       width: 40px; height: 40px; border-radius: 10px;
       display: flex; align-items: center; justify-content: center;
@@ -92,7 +170,11 @@
     }
     .stat-value { font-size: 28px; font-weight: 800; }
     .stat-label { font-size: 12px; color: var(--text2); margin-top: 4px; }
-    /* Cards */
+    .stat-delta { font-size: 11px; margin-top: 6px; }
+    .stat-delta.up { color: var(--success); }
+    .stat-delta.down { color: var(--danger); }
+
+    /* ── CARDS ── */
     .card {
       background: var(--card); border: 1px solid var(--border);
       border-radius: var(--radius); padding: 20px; margin-bottom: 16px;
@@ -101,7 +183,9 @@
       font-size: 15px; font-weight: 700; margin-bottom: 16px;
       display: flex; align-items: center; gap: 8px;
     }
-    /* Table */
+    .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    /* ── TABLE ── */
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th {
@@ -111,33 +195,42 @@
       letter-spacing: 0.5px; font-weight: 600;
       border-bottom: 1px solid var(--border);
     }
-    td { padding: 10px 12px; border-bottom: 1px solid rgba(42,42,74,0.5); }
+    td { padding: 10px 12px; border-bottom: 1px solid rgba(42,42,74,0.5); vertical-align: middle; }
     tr:hover td { background: rgba(214,51,132,0.04); }
-    /* Badges */
+
+    /* ── BADGES ── */
     .badge {
       display: inline-block; padding: 3px 10px; border-radius: 20px;
       font-size: 11px; font-weight: 600;
     }
-    .badge-pending { background: rgba(243,156,18,0.15); color: var(--warn); }
-    .badge-confirmed { background: rgba(46,204,113,0.15); color: var(--success); }
-    .badge-cancelled { background: rgba(231,76,60,0.15); color: var(--danger); }
-    .badge-active { background: rgba(52,152,219,0.15); color: var(--info); }
-    .badge-completed { background: rgba(46,204,113,0.15); color: var(--success); }
-    /* Buttons */
+    .badge-pending   { background: rgba(243,156,18,0.15);  color: var(--warn); }
+    .badge-confirmed { background: rgba(46,204,113,0.15);  color: var(--success); }
+    .badge-cancelled { background: rgba(231,76,60,0.15);   color: var(--danger); }
+    .badge-active    { background: rgba(52,152,219,0.15);  color: var(--info); }
+    .badge-completed { background: rgba(46,204,113,0.15);  color: var(--success); }
+    .badge-gold      { background: rgba(201,149,106,0.15); color: var(--gold); }
+
+    /* ── BUTTONS ── */
     .btn {
       display: inline-flex; align-items: center; gap: 6px;
       padding: 8px 16px; border-radius: 8px; border: none;
       font-size: 13px; font-weight: 600; cursor: pointer;
-      transition: all 0.2s; font-family: inherit;
+      transition: all 0.2s; font-family: inherit; text-decoration: none;
     }
     .btn-primary { background: var(--accent); color: #fff; }
     .btn-primary:hover { background: var(--accent2); }
     .btn-ghost { background: rgba(255,255,255,0.06); color: var(--text); border: 1px solid var(--border); }
     .btn-ghost:hover { background: rgba(255,255,255,0.1); }
     .btn-success { background: var(--success); color: #fff; }
+    .btn-success:hover { opacity: 0.85; }
     .btn-danger { background: var(--danger); color: #fff; }
+    .btn-danger:hover { opacity: 0.85; }
+    .btn-gold { background: var(--gold); color: #fff; }
+    .btn-gold:hover { opacity: 0.85; }
     .btn-sm { padding: 5px 10px; font-size: 11px; }
-    /* Forms */
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── FORMS ── */
     .form-group { margin-bottom: 16px; }
     .form-label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 6px; }
     .form-input {
@@ -148,36 +241,81 @@
     }
     .form-input:focus { outline: none; border-color: var(--accent); }
     textarea.form-input { min-height: 80px; resize: vertical; }
-    /* Config section */
-    .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    /* Chat bubble */
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    /* ── CHAT BUBBLE ── */
     .chat-bubble {
       padding: 12px 16px; border-radius: 12px;
-      max-width: 80%; margin-bottom: 10px;
+      max-width: 78%; margin-bottom: 10px;
       font-size: 13px; line-height: 1.5;
     }
     .chat-user { background: var(--card2); margin-left: auto; border-bottom-right-radius: 4px; }
-    .chat-mary { background: linear-gradient(135deg, rgba(214,51,132,0.15), rgba(201,149,106,0.15)); border-bottom-left-radius: 4px; }
+    .chat-mary {
+      background: linear-gradient(135deg, rgba(214,51,132,0.12), rgba(201,149,106,0.12));
+      border-bottom-left-radius: 4px;
+      border-left: 3px solid var(--accent);
+    }
     .chat-role { font-size: 10px; color: var(--text3); margin-bottom: 4px; font-weight: 600; }
-    /* Empty state */
-    .empty-state {
-      text-align: center; padding: 40px; color: var(--text3);
-    }
-    .empty-state i { font-size: 48px; margin-bottom: 12px; opacity: 0.3; }
+
+    /* ── EMPTY STATE ── */
+    .empty-state { text-align: center; padding: 40px; color: var(--text3); }
+    .empty-state i { font-size: 48px; margin-bottom: 12px; opacity: 0.3; display: block; }
     .empty-state p { font-size: 14px; }
-    /* Toast */
-    .toast-container {
-      position: fixed; bottom: 20px; right: 20px; z-index: 9999;
-    }
+
+    /* ── TOAST ── */
+    .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; }
     .toast {
       padding: 12px 20px; border-radius: 10px;
       background: var(--card); border: 1px solid var(--border);
       box-shadow: var(--shadow); margin-top: 8px;
       font-size: 13px; animation: slideIn 0.3s;
-      display: flex; align-items: center; gap: 8px;
+      display: flex; align-items: center; gap: 8px; min-width: 240px;
     }
-    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-    /* Setup wizard */
+    @keyframes slideIn { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    /* ── STATUS DOT ── */
+    .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+    .status-online { background: var(--success); box-shadow: 0 0 8px rgba(46,204,113,0.6); animation: pulse 2s infinite; }
+    .status-offline { background: var(--danger); }
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.5} }
+
+    /* ── FILTER BAR ── */
+    .filter-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+    .filter-bar input, .filter-bar select {
+      padding: 7px 12px; border-radius: 8px; border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04); color: var(--text); font-size: 13px; font-family: inherit;
+    }
+    .filter-bar input:focus, .filter-bar select:focus { outline: none; border-color: var(--accent); }
+
+    /* ── LICENSE GEN ── */
+    .license-output {
+      background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+      padding: 14px 18px; font-family: 'JetBrains Mono', monospace; font-size: 15px;
+      letter-spacing: 2px; color: var(--accent); text-align: center; min-height: 50px;
+      display: flex; align-items: center; justify-content: center; margin: 12px 0;
+    }
+
+    /* ── VOICE TEST BUBBLE ── */
+    .voice-bubble {
+      background: linear-gradient(135deg, rgba(214,51,132,0.1), rgba(201,149,106,0.1));
+      border: 1px solid rgba(214,51,132,0.25); border-radius: 12px;
+      padding: 16px 20px; margin-top: 12px; font-size: 14px; line-height: 1.7;
+      font-style: italic; color: var(--text); position: relative;
+    }
+    .voice-bubble::before {
+      content: '"'; font-size: 48px; color: var(--accent); opacity: 0.2;
+      position: absolute; top: -10px; left: 10px; font-family: Georgia, serif;
+    }
+
+    /* ── NOTIFICATION BADGE ── */
+    .notif-badge {
+      background: var(--danger); color: #fff; border-radius: 50%;
+      width: 18px; height: 18px; font-size: 10px; font-weight: 800;
+      display: inline-flex; align-items: center; justify-content: center;
+      margin-left: auto;
+    }
+
+    /* ── SETUP OVERLAY ── */
     .setup-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.8);
       display: flex; align-items: center; justify-content: center;
@@ -186,9 +324,9 @@
     .setup-card {
       background: var(--card); border: 1px solid var(--border);
       border-radius: 20px; padding: 40px; max-width: 500px; width: 90%;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto;
     }
-    .setup-card h2 { text-align: center; margin-bottom: 8px; font-size: 24px; }
+    .setup-card h2 { text-align: center; margin-bottom: 8px; font-size: 22px; }
     .setup-card .subtitle { text-align: center; color: var(--text2); font-size: 13px; margin-bottom: 24px; }
     .setup-step { margin-bottom: 16px; }
     .setup-step h3 { font-size: 14px; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
@@ -198,78 +336,94 @@
       border-radius: 4px; font-family: 'JetBrains Mono', monospace;
       font-size: 12px; color: var(--accent);
     }
-    /* Bot status */
-    .status-dot {
-      display: inline-block; width: 8px; height: 8px;
-      border-radius: 50%; margin-right: 6px;
+
+    /* ── MOBILE ── */
+    .mobile-toggle {
+      display: none; position: fixed; top: 12px; left: 12px; z-index: 200;
+      width: 40px; height: 40px; border-radius: 10px;
+      background: var(--card); border: 1px solid var(--border);
+      align-items: center; justify-content: center;
+      cursor: pointer; font-size: 18px; color: var(--text);
     }
-    .status-online { background: var(--success); box-shadow: 0 0 8px rgba(46,204,113,0.5); }
-    .status-offline { background: var(--danger); }
-    /* Mobile */
     @media (max-width: 768px) {
       .sidebar { transform: translateX(-100%); }
       .sidebar.open { transform: translateX(0); }
-      .main { margin-left: 0; }
-      .config-grid { grid-template-columns: 1fr; }
-      .mobile-toggle {
-        display: flex !important; position: fixed;
-        top: 12px; left: 12px; z-index: 200;
-        width: 40px; height: 40px; border-radius: 10px;
-        background: var(--card); border: 1px solid var(--border);
-        align-items: center; justify-content: center;
-        cursor: pointer; font-size: 18px; color: var(--text);
-      }
+      .main { margin-left: 0; padding: 16px; padding-top: 64px; }
+      .mobile-toggle { display: flex; }
+      .card-grid, .form-row { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .page-header { flex-direction: column; }
     }
-    .mobile-toggle { display: none; }
-    /* Pulse animation */
-    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
-    .pulse { animation: pulse 2s infinite; }
-    /* Mono font */
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── UTILS ── */
     .mono { font-family: 'JetBrains Mono', monospace; }
     .hidden { display: none !important; }
+    .text-accent { color: var(--accent); }
+    .text-gold { color: var(--gold); }
+    .text-muted { color: var(--text2); font-size: 12px; }
+    .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+    .live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--success); margin-right: 6px; animation: pulse 1.5s infinite; }
   </style>
 </head>
 <body>
-  <!-- Mobile toggle -->
-  <button class="mobile-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
 
-  <!-- Setup Overlay -->
+  <!-- ══════════════════════════════════
+       IRON LOCK — Login Screen
+       ══════════════════════════════════ -->
+  <div id="lockScreen">
+    <div class="lock-card">
+      <div class="lock-logo">🤖💅</div>
+      <div class="lock-title">Mary Bot Admin</div>
+      <div class="lock-subtitle">Panel de Administración — Nail Beautiful</div>
+      <input
+        type="password"
+        class="lock-input"
+        id="lockInput"
+        placeholder="Ingresa tu código de acceso"
+        autocomplete="off"
+        onkeydown="if(event.key==='Enter')intentarAcceso()"
+      >
+      <button class="lock-btn" onclick="intentarAcceso()">
+        <i class="fa-solid fa-unlock-keyhole"></i> &nbsp;Acceder
+      </button>
+      <div class="lock-error" id="lockError"></div>
+      <div class="lock-version">Mary Bot v2.0 · A2K Digital Studio</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       MODAL CONTRASEÑA ADMIN
+       ══════════════════════════════════ -->
+  <div id="modalAdminPw">
+    <div class="admin-pw-card">
+      <h3><i class="fa-solid fa-shield-halved" style="color:var(--gold)"></i> Zona Admin</h3>
+      <p>Ingresa la contraseña de administrador para generar licencias</p>
+      <input type="password" class="form-input" id="adminPwInput" placeholder="Contraseña admin" onkeydown="if(event.key==='Enter')verificarAdminPw()">
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btn-ghost" style="flex:1" onclick="cerrarAdminPw()">Cancelar</button>
+        <button class="btn btn-primary" style="flex:1" onclick="verificarAdminPw()">Verificar</button>
+      </div>
+      <div style="color:var(--danger);font-size:12px;margin-top:8px" id="adminPwError"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       SETUP OVERLAY (Firebase config)
+       ══════════════════════════════════ -->
   <div class="setup-overlay hidden" id="setupOverlay">
     <div class="setup-card">
-      <h2>🤖 Configurar Mary Bot</h2>
-      <p class="subtitle">Primera vez — ingresa los datos de tu proyecto de Firebase</p>
-      <div class="setup-step">
-        <h3><i class="fa-solid fa-key" style="color:var(--gold)"></i> API Key de Gemini</h3>
-        <p>Obtén una gratis en <code>aistudio.google.com</code></p>
-        <input type="text" class="form-input" id="setup-gemini-key" placeholder="AIzaSy...">
-      </div>
+      <h2>Configurar Mary Bot</h2>
+      <p class="subtitle">Primera vez — ingresa los datos de tu proyecto Firebase</p>
       <div class="setup-step">
         <h3><i class="fa-solid fa-fire" style="color:var(--warn)"></i> Firebase Config</h3>
-        <p>Abre tu proyecto en <code>console.firebase.google.com</code> → Configuración → General → Tus apps</p>
-        <div class="form-group">
-          <label class="form-label">API Key</label>
-          <input type="text" class="form-input" id="setup-fb-api-key" placeholder="AIzaSy...">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Auth Domain</label>
-          <input type="text" class="form-input" id="setup-fb-auth-domain" placeholder="tu-proyecto.web.app">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Project ID</label>
-          <input type="text" class="form-input" id="setup-fb-project-id" placeholder="tu-proyecto-id">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Storage Bucket</label>
-          <input type="text" class="form-input" id="setup-fb-storage" placeholder="tu-proyecto.appspot.com">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Messaging Sender ID</label>
-          <input type="text" class="form-input" id="setup-fb-sender" placeholder="123456789">
-        </div>
-        <div class="form-group">
-          <label class="form-label">App ID</label>
-          <input type="text" class="form-input" id="setup-fb-app-id" placeholder="1:123456789:web:abc123">
-        </div>
+        <p>Abre tu proyecto en <code>console.firebase.google.com</code> → Configuracion → General → Tus apps</p>
+        <div class="form-group"><label class="form-label">API Key</label><input type="text" class="form-input" id="setup-fb-api-key" placeholder="AIzaSy..."></div>
+        <div class="form-group"><label class="form-label">Auth Domain</label><input type="text" class="form-input" id="setup-fb-auth-domain" placeholder="tu-proyecto.web.app"></div>
+        <div class="form-group"><label class="form-label">Project ID</label><input type="text" class="form-input" id="setup-fb-project-id" placeholder="tu-proyecto-id"></div>
+        <div class="form-group"><label class="form-label">App ID</label><input type="text" class="form-input" id="setup-fb-app-id" placeholder="1:123456789:web:abc123"></div>
       </div>
       <button class="btn btn-primary" style="width:100%;justify-content:center;padding:14px;font-size:15px" onclick="guardarSetup()">
         <i class="fa-solid fa-rocket"></i> Guardar y Conectar
@@ -277,68 +431,108 @@
     </div>
   </div>
 
-  <!-- Sidebar -->
+  <!-- Mobile toggle -->
+  <button class="mobile-toggle" id="mobileToggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+
+  <!-- ══════════════════════════════════
+       SIDEBAR
+       ══════════════════════════════════ -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
       <h1><i class="fa-solid fa-robot"></i> Mary Bot</h1>
-      <p>Panel de Administración</p>
+      <p><span class="status-dot status-online"></span>Sistema Activo</p>
     </div>
+
+    <div class="nav-section">Principal</div>
     <div class="nav-item active" onclick="showPage('dashboard', this)">
       <i class="fa-solid fa-chart-line"></i> Dashboard
     </div>
     <div class="nav-item" onclick="showPage('llamadas', this)">
       <i class="fa-solid fa-phone"></i> Llamadas
     </div>
-    <div class="nav-item" onclick="showPage('citas', this)">
-      <i class="fa-solid fa-calendar-check"></i> Citas del Bot
+    <div class="nav-item" onclick="showPage('citas', this); loadCitas()">
+      <i class="fa-solid fa-calendar-check"></i> Citas
+      <span class="notif-badge hidden" id="badge-citas">0</span>
     </div>
     <div class="nav-item" onclick="showPage('conversaciones', this)">
       <i class="fa-solid fa-comments"></i> Conversaciones
     </div>
+
+    <div class="nav-section">Configuracion</div>
     <div class="nav-item" onclick="showPage('configuracion', this)">
-      <i class="fa-solid fa-cog"></i> Configuración
+      <i class="fa-solid fa-cog"></i> Bot Config
+    </div>
+    <div class="nav-item" onclick="showPage('licencias', this)">
+      <i class="fa-solid fa-key"></i> Licencias
     </div>
     <div class="nav-item" onclick="showPage('setup', this)">
-      <i class="fa-solid fa-key"></i> API Keys
+      <i class="fa-solid fa-fire"></i> API Keys
+    </div>
+
+    <div class="sidebar-user">
+      <div class="sidebar-user-avatar"><i class="fa-solid fa-user"></i></div>
+      <div>
+        <div class="sidebar-user-name" id="sidebarUserName">Admin</div>
+        <div class="sidebar-user-role">Nail Beautiful</div>
+      </div>
     </div>
     <div class="sidebar-footer">
-      Mary Bot v1.0 — Nail Beautiful<br>
-      <span style="color:var(--text3)">Hecho con ❤️</span>
+      Mary Bot v2.0 — A2K Digital Studio
     </div>
   </aside>
 
-  <!-- Main Content -->
+  <!-- ══════════════════════════════════
+       MAIN CONTENT
+       ══════════════════════════════════ -->
   <main class="main">
+
     <!-- DASHBOARD -->
     <div class="page" id="page-dashboard">
       <div class="page-header">
-        <h2>📊 Dashboard</h2>
-        <p>Resumen de actividad del bot Mary</p>
+        <div>
+          <h2><i class="fa-solid fa-chart-line text-accent"></i> Dashboard</h2>
+          <p><span class="live-dot"></span>Actualizacion automatica cada 30 segundos</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="loadStats(); loadLlamadas()">
+          <i class="fa-solid fa-rotate-right"></i> Actualizar
+        </button>
       </div>
-      <div class="stats-grid" id="stats-grid">
-        <div class="stat-card">
+
+      <div class="stats-grid">
+        <div class="stat-card" style="--accent-glow:var(--accent)">
           <div class="stat-icon" style="background:rgba(214,51,132,0.15);color:var(--accent)"><i class="fa-solid fa-phone"></i></div>
           <div class="stat-value" id="stat-llamadas-hoy">0</div>
           <div class="stat-label">Llamadas Hoy</div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" style="--accent-glow:var(--success)">
           <div class="stat-icon" style="background:rgba(46,204,113,0.15);color:var(--success)"><i class="fa-solid fa-calendar-check"></i></div>
           <div class="stat-value" id="stat-citas-hoy">0</div>
           <div class="stat-label">Citas Agendadas Hoy</div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" style="--accent-glow:var(--warn)">
           <div class="stat-icon" style="background:rgba(243,156,18,0.15);color:var(--warn)"><i class="fa-solid fa-clock"></i></div>
           <div class="stat-value" id="stat-pendientes">0</div>
           <div class="stat-label">Citas Pendientes</div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" style="--accent-glow:var(--info)">
           <div class="stat-icon" style="background:rgba(52,152,219,0.15);color:var(--info)"><i class="fa-solid fa-hourglass-half"></i></div>
           <div class="stat-value" id="stat-duracion">0s</div>
-          <div class="stat-label">Duración Promedio</div>
+          <div class="stat-label">Duracion Promedio</div>
+        </div>
+        <div class="stat-card" style="--accent-glow:var(--gold)">
+          <div class="stat-icon" style="background:rgba(201,149,106,0.15);color:var(--gold)"><i class="fa-solid fa-percent"></i></div>
+          <div class="stat-value" id="stat-conversion">0%</div>
+          <div class="stat-label">Tasa de Conversion</div>
+        </div>
+        <div class="stat-card" style="--accent-glow:var(--accent)">
+          <div class="stat-icon" style="background:rgba(214,51,132,0.15);color:var(--accent)"><i class="fa-solid fa-phone-volume"></i></div>
+          <div class="stat-value" id="stat-total">0</div>
+          <div class="stat-label">Total Llamadas</div>
         </div>
       </div>
+
       <div class="card">
-        <div class="card-title"><i class="fa-solid fa-phone-volume" style="color:var(--accent)"></i> Últimas Llamadas</div>
+        <div class="card-title"><i class="fa-solid fa-phone-volume" style="color:var(--accent)"></i> Ultimas Llamadas</div>
         <div class="table-wrap" id="recent-calls-table">
           <div class="empty-state"><i class="fa-solid fa-phone-slash"></i><p>Sin llamadas registradas</p></div>
         </div>
@@ -348,13 +542,31 @@
     <!-- LLAMADAS -->
     <div class="page hidden" id="page-llamadas">
       <div class="page-header">
-        <h2>📞 Historial de Llamadas</h2>
-        <p>Todas las llamadas recibidas por Mary</p>
+        <div>
+          <h2><i class="fa-solid fa-phone text-accent"></i> Historial de Llamadas</h2>
+          <p>Todas las llamadas recibidas por Mary</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="loadLlamadas()"><i class="fa-solid fa-refresh"></i> Actualizar</button>
       </div>
       <div class="card">
-        <div class="card-title" style="justify-content:space-between">
-          <span><i class="fa-solid fa-list" style="color:var(--accent)"></i> Todas las Llamadas</span>
-          <button class="btn btn-ghost btn-sm" onclick="loadLlamadas()"><i class="fa-solid fa-refresh"></i> Actualizar</button>
+        <div class="filter-bar">
+          <input type="text" id="filter-llamadas-search" placeholder="Buscar numero..." oninput="filtrarLlamadas()" style="width:180px">
+          <select id="filter-llamadas-estado" onchange="filtrarLlamadas()">
+            <option value="">Todos los estados</option>
+            <option value="completed">Completada</option>
+            <option value="en_conversacion">En conversacion</option>
+            <option value="finalizada">Finalizada</option>
+            <option value="no-answer">Sin respuesta</option>
+            <option value="derivada_dueno">Derivada</option>
+          </select>
+          <select id="filter-llamadas-intencion" onchange="filtrarLlamadas()">
+            <option value="">Todas las intenciones</option>
+            <option value="agendar">Agendar</option>
+            <option value="precios">Precios</option>
+            <option value="servicios">Servicios</option>
+            <option value="horarios">Horarios</option>
+            <option value="general">General</option>
+          </select>
         </div>
         <div class="table-wrap" id="all-calls-table">
           <div class="empty-state"><i class="fa-solid fa-phone-slash"></i><p>Cargando...</p></div>
@@ -365,14 +577,26 @@
     <!-- CITAS -->
     <div class="page hidden" id="page-citas">
       <div class="page-header">
-        <h2>📅 Citas del Bot</h2>
-        <p>Citas agendadas automáticamente por Mary</p>
-      </div>
-      <div class="card">
-        <div class="card-title" style="justify-content:space-between">
-          <span><i class="fa-solid fa-calendar" style="color:var(--accent)"></i> Citas Pendientes de Confirmación</span>
-          <button class="btn btn-ghost btn-sm" onclick="loadCitas()"><i class="fa-solid fa-refresh"></i> Actualizar</button>
+        <div>
+          <h2><i class="fa-solid fa-calendar-check text-accent"></i> Citas del Bot</h2>
+          <p>Citas agendadas automaticamente por Mary</p>
         </div>
+        <button class="btn btn-ghost btn-sm" onclick="loadCitas()"><i class="fa-solid fa-refresh"></i> Actualizar</button>
+      </div>
+
+      <div class="filter-bar">
+        <select id="filter-citas-estado" onchange="filtrarCitas()">
+          <option value="">Todos los estados</option>
+          <option value="pendiente">Pendiente</option>
+          <option value="pendiente_confirmacion">Pendiente confirmacion</option>
+          <option value="confirmada">Confirmada</option>
+          <option value="cancelada">Cancelada</option>
+          <option value="completada">Completada</option>
+        </select>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-calendar" style="color:var(--accent)"></i> Lista de Citas</div>
         <div id="citas-container">
           <div class="empty-state"><i class="fa-solid fa-calendar-xmark"></i><p>Cargando...</p></div>
         </div>
@@ -382,31 +606,42 @@
     <!-- CONVERSACIONES -->
     <div class="page hidden" id="page-conversaciones">
       <div class="page-header">
-        <h2>💬 Conversaciones</h2>
-        <p>Historial de conversaciones de Mary con las clientas</p>
-      </div>
-      <div class="card">
-        <div class="card-title" style="justify-content:space-between">
-          <span><i class="fa-solid fa-comments" style="color:var(--accent)"></i> Conversaciones Recientes</span>
-          <button class="btn btn-ghost btn-sm" onclick="loadLlamadas()"><i class="fa-solid fa-refresh"></i> Actualizar</button>
+        <div>
+          <h2><i class="fa-solid fa-comments text-accent"></i> Conversaciones</h2>
+          <p>Historial de conversaciones de Mary con las clientas</p>
         </div>
-        <div id="conv-container">
-          <div class="empty-state"><i class="fa-solid fa-comment-slash"></i><p>Selecciona una llamada para ver la conversación</p></div>
+        <button class="btn btn-ghost btn-sm" onclick="loadLlamadas()"><i class="fa-solid fa-refresh"></i> Actualizar</button>
+      </div>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-title"><i class="fa-solid fa-list" style="color:var(--accent)"></i> Llamadas</div>
+          <div id="conv-list-container">
+            <div class="empty-state"><i class="fa-solid fa-phone-slash"></i><p>Carga desde el Dashboard</p></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="fa-solid fa-message" style="color:var(--gold)"></i> Conversacion</div>
+          <div id="conv-container">
+            <div class="empty-state"><i class="fa-solid fa-comment-slash"></i><p>Selecciona una llamada</p></div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- CONFIGURACIÓN -->
+    <!-- CONFIGURACION -->
     <div class="page hidden" id="page-configuracion">
       <div class="page-header">
-        <h2>⚙️ Configuración del Bot</h2>
-        <p>Personaliza el comportamiento de Mary</p>
+        <div>
+          <h2><i class="fa-solid fa-cog text-accent"></i> Configuracion del Bot</h2>
+          <p>Personaliza el comportamiento de Mary</p>
+        </div>
       </div>
+
       <div class="card">
-        <div class="card-title"><i class="fa-solid fa-sliders" style="color:var(--accent)"></i> Datos del Salón</div>
-        <div class="config-grid">
+        <div class="card-title"><i class="fa-solid fa-sliders" style="color:var(--accent)"></i> Datos del Salon</div>
+        <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Nombre del Salón</label>
+            <label class="form-label">Nombre del Salon</label>
             <input type="text" class="form-input" id="cfg-nombre" value="Nail Beautiful">
           </div>
           <div class="form-group">
@@ -419,81 +654,134 @@
           </div>
           <div class="form-group">
             <label class="form-label">Tono de Voz</label>
-            <input type="text" class="form-input" id="cfg-tono" value="cálida, profesional, amigable y servicial">
+            <input type="text" class="form-input" id="cfg-tono" value="calida, profesional, amigable y servicial">
           </div>
         </div>
         <div class="form-group">
           <label class="form-label">Instrucciones Especiales para Mary</label>
-          <textarea class="form-input" id="cfg-instrucciones" placeholder="Ejemplo: Siempre preguntar si la clienta trae su propio esmalte, ofrecer descuento a clientas nuevas..."></textarea>
+          <textarea class="form-input" id="cfg-instrucciones" placeholder="Ej: Siempre preguntar si la clienta trae su propio esmalte, ofrecer descuento a clientas nuevas..."></textarea>
         </div>
-        <button class="btn btn-primary" onclick="guardarConfig()"><i class="fa-solid fa-save"></i> Guardar Configuración</button>
+        <div class="form-group">
+          <label class="form-label">Numero WhatsApp del Dueno (notificaciones)</label>
+          <input type="text" class="form-input" id="cfg-owner-wa" placeholder="+584121234567">
+        </div>
+        <button class="btn btn-primary" onclick="guardarConfig()"><i class="fa-solid fa-save"></i> Guardar Configuracion</button>
       </div>
 
       <div class="card">
-        <div class="card-title"><i class="fa-solid fa-microphone" style="color:var(--gold)"></i> Configuración de Voz</div>
+        <div class="card-title"><i class="fa-solid fa-microphone" style="color:var(--gold)"></i> Voz de Mary</div>
         <div class="form-group">
-          <label class="form-label">Voz de Mary (Twilio Polly)</label>
+          <label class="form-label">Voz Twilio (actualmente: Polly.Lupe-Neural — Neural, mas natural)</label>
           <select class="form-input" id="cfg-voz">
-            <option value="Polly.Lucia">Lucía (Español Latino - Recomendada)</option>
-            <option value="Polly.Conchita">Conchita (Español Latino)</option>
-            <option value="Polly.Penelope">Penélope (Español EU)</option>
-            <option value="Polly.Mia">Mia (Español EU)</option>
-            <option value="Polly.Miguel">Miguel (Español Latino - Masculina)</option>
+            <option value="Polly.Lupe-Neural" selected>Lupe Neural (Espanol US - Recomendada, mas humana)</option>
+            <option value="Polly.Lucia">Lucia (Espanol Latino - Estandar)</option>
+            <option value="Polly.Conchita">Conchita (Espanol EU)</option>
+            <option value="Polly.Penelope">Penelope (Espanol EU)</option>
+            <option value="Polly.Mia">Mia (Espanol MX)</option>
           </select>
         </div>
+        <div class="card-title" style="font-size:13px;color:var(--text2);margin-top:4px">Prueba de Voz</div>
+        <div class="form-group">
+          <label class="form-label">Texto para previsualizar como lo diria Mary</label>
+          <textarea class="form-input" id="voice-test-text" rows="3" placeholder="Hola, bienvenida a Nail Beautiful. Soy Mary, tu asistente virtual..."></textarea>
+        </div>
+        <button class="btn btn-ghost" onclick="testVoz()"><i class="fa-solid fa-play"></i> Previsualizar texto</button>
+        <div id="voice-test-result"></div>
       </div>
 
       <div class="card">
-        <div class="card-title"><i class="fa-solid fa-list-check" style="color:var(--success)"></i> Servicios del Salón (32 servicios cargados)</div>
-        <p style="font-size:12px;color:var(--text2);margin-bottom:12px">
-          Los servicios se cargaron automáticamente desde el sistema Nail. Para cambiarlos, edita el archivo <code>functions/index.js</code> del bot y vuelve a desplegar.
+        <div class="card-title"><i class="fa-solid fa-list-check" style="color:var(--success)"></i> Servicios del Salon (32 servicios)</div>
+        <p class="text-muted" style="margin-bottom:12px">
+          Para modificar precios o agregar servicios, edita el array <code class="mono" style="font-size:11px">SERVICIOS</code> en <code class="mono" style="font-size:11px">functions/index.js</code> y vuelve a desplegar.
         </p>
-        <button class="btn btn-ghost btn-sm" onclick="mostrarServicios()"><i class="fa-solid fa-eye"></i> Ver Lista de Servicios</button>
+        <button class="btn btn-ghost btn-sm" onclick="mostrarServicios()"><i class="fa-solid fa-eye"></i> Ver Lista Completa</button>
         <div id="servicios-lista" class="hidden" style="margin-top:16px;max-height:400px;overflow-y:auto"></div>
+      </div>
+    </div>
+
+    <!-- LICENCIAS -->
+    <div class="page hidden" id="page-licencias">
+      <div class="page-header">
+        <div>
+          <h2><i class="fa-solid fa-key text-gold"></i> Sistema de Licencias</h2>
+          <p>Genera codigos de acceso para Mary Bot Admin</p>
+        </div>
+      </div>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-title"><i class="fa-solid fa-crown" style="color:var(--gold)"></i> Licencia PRO</div>
+          <p class="text-muted" style="margin-bottom:16px">Genera un codigo de acceso PRO para Mary Bot. Formato: MARY-XXXX-XXXX</p>
+          <button class="btn btn-gold" onclick="pedirAdminPw('pro')">
+            <i class="fa-solid fa-plus"></i> Generar Codigo PRO
+          </button>
+          <div class="license-output" id="out-pro">— — —</div>
+          <button class="btn btn-ghost btn-sm hidden" id="copiar-pro" onclick="copiarCodigo('out-pro')">
+            <i class="fa-solid fa-copy"></i> Copiar
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i class="fa-solid fa-hourglass-half" style="color:var(--info)"></i> Licencia DEMO</div>
+          <p class="text-muted" style="margin-bottom:16px">Genera un codigo de prueba temporal. Formato: MDEMO-XXXX-XXXX</p>
+          <button class="btn btn-primary" onclick="pedirAdminPw('demo')">
+            <i class="fa-solid fa-plus"></i> Generar Codigo DEMO
+          </button>
+          <div class="license-output" id="out-demo">— — —</div>
+          <button class="btn btn-ghost btn-sm hidden" id="copiar-demo" onclick="copiarCodigo('out-demo')">
+            <i class="fa-solid fa-copy"></i> Copiar
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-circle-info" style="color:var(--info)"></i> Codigos Maestros de Acceso</div>
+        <p class="text-muted" style="margin-bottom:8px">Los siguientes codigos son de acceso permanente. Comparte con cuidado.</p>
+        <table>
+          <thead><tr><th>Codigo</th><th>Tipo</th><th>Uso</th></tr></thead>
+          <tbody>
+            <tr><td class="mono" style="color:var(--accent)">MARY-ABIG-2024</td><td><span class="badge badge-gold">MASTER</span></td><td>Acceso completo permanente</td></tr>
+            <tr><td class="mono" style="color:var(--accent)">MARY-ZYNC-2024</td><td><span class="badge badge-gold">MASTER</span></td><td>Acceso completo permanente</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
     <!-- SETUP / API KEYS -->
     <div class="page hidden" id="page-setup">
       <div class="page-header">
-        <h2>🔑 Configuración API</h2>
-        <p>Keys de conexión a Firebase y Gemini</p>
-      </div>
-      <div class="card">
-        <div class="card-title"><i class="fa-solid fa-brain" style="color:var(--gold)"></i> Gemini API Key</div>
-        <div class="form-group">
-          <label class="form-label">API Key de Google Gemini</label>
-          <input type="password" class="form-input" id="api-gemini" placeholder="AIzaSy...">
+        <div>
+          <h2><i class="fa-solid fa-fire text-gold"></i> API Keys & Firebase</h2>
+          <p>Configuracion de conexion a Firebase y servicios externos</p>
         </div>
-        <button class="btn btn-primary btn-sm" onclick="guardarGeminiKey()"><i class="fa-solid fa-save"></i> Guardar</button>
       </div>
       <div class="card">
         <div class="card-title"><i class="fa-solid fa-fire" style="color:var(--warn)"></i> Firebase Config</div>
-        <p style="font-size:12px;color:var(--text2);margin-bottom:12px">
-          Estos datos se usan para conectar con el panel. Los datos del proyecto los obtienes en la consola de Firebase.
-        </p>
-        <div class="form-group">
-          <label class="form-label">Project ID</label>
-          <input type="text" class="form-input" id="api-project-id" placeholder="tu-proyecto-id">
+        <p class="text-muted" style="margin-bottom:16px">Datos del proyecto Firebase. Obtenlos en la consola de Firebase → Configuracion → Tus apps.</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Project ID</label>
+            <input type="text" class="form-input" id="api-project-id" placeholder="tu-proyecto-id">
+          </div>
+          <div class="form-group">
+            <label class="form-label">API Key</label>
+            <input type="text" class="form-input" id="api-fb-key" placeholder="AIzaSy...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Auth Domain</label>
+            <input type="text" class="form-input" id="api-auth-domain" placeholder="tu-proyecto.web.app">
+          </div>
+          <div class="form-group">
+            <label class="form-label">App ID</label>
+            <input type="text" class="form-input" id="api-app-id" placeholder="1:123:web:abc">
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">API Key</label>
-          <input type="text" class="form-input" id="api-fb-key" placeholder="AIzaSy...">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Auth Domain</label>
-          <input type="text" class="form-input" id="api-auth-domain" placeholder="tu-proyecto.web.app">
-        </div>
-        <div class="form-group">
-          <label class="form-label">App ID</label>
-          <input type="text" class="form-input" id="api-app-id" placeholder="1:123:web:abc">
-        </div>
-        <button class="btn btn-primary btn-sm" onclick="guardarFirebaseConfig()"><i class="fa-solid fa-save"></i> Guardar</button>
+        <button class="btn btn-primary btn-sm" onclick="guardarFirebaseConfig()"><i class="fa-solid fa-save"></i> Guardar y Reconectar</button>
       </div>
     </div>
+
   </main>
 
-  <!-- Toast container -->
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Firebase SDK -->
@@ -502,417 +790,610 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-functions-compat.js"></script>
 
   <script>
-    /* ══════════════════════════════════════════════
-       GLOBALS & INIT
-       ══════════════════════════════════════════════ */
-    let db, functions, fbConfig;
-    const LS_KEY = 'mary_bot_config';
+  /* ══════════════════════════════════════════════
+     IRON LOCK — Sistema de Licencias Mary Bot
+     ══════════════════════════════════════════════ */
 
-    function getSavedConfig() {
-      try {
-        return JSON.parse(localStorage.getItem(LS_KEY)) || null;
-      } catch(e) { return null; }
+  const LOCK_KEY = 'mary_lock_v2';
+  const ADMIN_PW = 'MaryBot2024admin';
+
+  // Codigos maestros con acceso permanente
+  const MASTER_CODES = ['MARY-ABIG-2024', 'MARY-ZYNC-2024'];
+
+  // Prefijos de codigos generados validos
+  function esCodigoValido(code) {
+    if (!code) return false;
+    const c = code.toUpperCase().trim();
+    if (MASTER_CODES.includes(c)) return true;
+    // PRO: MARY-XXXX-XXXX
+    if (/^MARY-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(c)) return true;
+    // DEMO: MDEMO-XXXX-XXXX
+    if (/^MDEMO-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(c)) return true;
+    return false;
+  }
+
+  function intentarAcceso() {
+    const input = document.getElementById('lockInput').value.trim().toUpperCase();
+    const error = document.getElementById('lockError');
+
+    if (esCodigoValido(input)) {
+      localStorage.setItem(LOCK_KEY, JSON.stringify({ code: input, ts: Date.now() }));
+      desbloquearApp(input);
+    } else {
+      error.textContent = 'Codigo incorrecto. Verifica e intenta de nuevo.';
+      document.getElementById('lockInput').style.borderColor = 'var(--danger)';
+      setTimeout(() => {
+        error.textContent = '';
+        document.getElementById('lockInput').style.borderColor = '';
+      }, 3000);
     }
+  }
 
-    function saveConfig(cfg) {
-      localStorage.setItem(LS_KEY, JSON.stringify(cfg));
+  function desbloquearApp(code) {
+    document.getElementById('lockScreen').style.display = 'none';
+    // Determinar nivel de acceso
+    const esMaster = MASTER_CODES.includes(code.toUpperCase());
+    document.getElementById('sidebarUserName').textContent = esMaster ? 'Admin Master' : 'Admin';
+    // Ocultar seccion de licencias si no es master
+    if (!esMaster) {
+      // Las secciones de licencias quedan visibles de todas formas, pero el modal de PW las protege
     }
-
-    function toast(msg, type = 'info') {
-      const c = document.getElementById('toast-container');
-      const icons = { success: 'fa-check-circle', error: 'fa-times-circle', info: 'fa-info-circle', warn: 'fa-exclamation-triangle' };
-      const colors = { success: 'var(--success)', error: 'var(--danger)', info: 'var(--info)', warn: 'var(--warn)' };
-      const t = document.createElement('div');
-      t.className = 'toast';
-      t.innerHTML = `<i class="fa-solid ${icons[type]}" style="color:${colors[type]}"></i> ${msg}`;
-      c.appendChild(t);
-      setTimeout(() => t.remove(), 4000);
-    }
-
-    // Firebase config preconfigurada — actualizar si cambia el proyecto
-    const FIREBASE_CONFIG_PRESET = {
-      apiKey: "AIzaSyA4pc_laIMG3JJYAFARV0LHDGYtXEMIe9c",
-      authDomain: "nail-bot-mary.firebaseapp.com",
-      projectId: "nail-bot-mary",
-      storageBucket: "nail-bot-mary.firebasestorage.app",
-      messagingSenderId: "232364416253",
-      appId: "1:232364416253:web:4732e603436ac4d06df294"
-    };
-
-    function initFirebase() {
-      const cfg = getSavedConfig();
-      if (!cfg || !cfg.projectId) {
-        // Usar config preconfigurada automáticamente
-        if (FIREBASE_CONFIG_PRESET.projectId) {
-          saveConfig(FIREBASE_CONFIG_PRESET);
-        }
-      }
-      const activeCfg = getSavedConfig() || FIREBASE_CONFIG_PRESET;
-      if (!activeCfg || !activeCfg.projectId) {
-        document.getElementById('setupOverlay').classList.remove('hidden');
-        return;
-      }
-      try {
-        if (!firebase.apps.length) {
-          firebase.initializeApp({
-            apiKey: activeCfg.apiKey,
-            authDomain: activeCfg.authDomain,
-            projectId: activeCfg.projectId,
-            storageBucket: activeCfg.storageBucket || activeCfg.projectId + '.appspot.com',
-            messagingSenderId: activeCfg.messagingSenderId || '',
-            appId: activeCfg.appId,
-          });
-        }
-        db = firebase.firestore();
-        functions = firebase.functions();
-        fbConfig = activeCfg;
-        document.getElementById('setupOverlay').classList.add('hidden');
-        // Load initial data
-        loadStats();
-        loadLlamadas();
-        // Restore config values
-        if (activeCfg.geminiKey) document.getElementById('api-gemini').value = activeCfg.geminiKey;
-        document.getElementById('api-project-id').value = activeCfg.projectId;
-        document.getElementById('api-fb-key').value = activeCfg.apiKey;
-        document.getElementById('api-auth-domain').value = activeCfg.authDomain;
-        document.getElementById('api-app-id').value = activeCfg.appId;
-      } catch (e) {
-        console.error('Firebase init error:', e);
-        toast('Error conectando a Firebase: ' + e.message, 'error');
-      }
-    }
-
-    /* ══════════════════════════════════════════════
-       SETUP
-       ══════════════════════════════════════════════ */
-    function guardarSetup() {
-      const cfg = {
-        projectId: document.getElementById('setup-fb-project-id').value.trim(),
-        apiKey: document.getElementById('setup-fb-api-key').value.trim(),
-        authDomain: document.getElementById('setup-fb-auth-domain').value.trim(),
-        storageBucket: document.getElementById('setup-fb-storage').value.trim(),
-        messagingSenderId: document.getElementById('setup-fb-sender').value.trim(),
-        appId: document.getElementById('setup-fb-app-id').value.trim(),
-        geminiKey: document.getElementById('setup-gemini-key').value.trim(),
-      };
-      if (!cfg.projectId || !cfg.apiKey) {
-        toast('Project ID y API Key son obligatorios', 'error');
-        return;
-      }
-      saveConfig(cfg);
-      toast('Configuración guardada', 'success');
-      initFirebase();
-    }
-
-    function guardarGeminiKey() {
-      const cfg = getSavedConfig() || {};
-      cfg.geminiKey = document.getElementById('api-gemini').value.trim();
-      saveConfig(cfg);
-      toast('API Key de Gemini guardada', 'success');
-    }
-
-    function guardarFirebaseConfig() {
-      const cfg = getSavedConfig() || {};
-      cfg.projectId = document.getElementById('api-project-id').value.trim();
-      cfg.apiKey = document.getElementById('api-fb-key').value.trim();
-      cfg.authDomain = document.getElementById('api-auth-domain').value.trim();
-      cfg.appId = document.getElementById('api-app-id').value.trim();
-      saveConfig(cfg);
-      toast('Firebase config guardada. Recarga para aplicar cambios.', 'success');
-    }
-
-    /* ══════════════════════════════════════════════
-       NAVIGATION
-       ══════════════════════════════════════════════ */
-    function showPage(page, el) {
-      document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-      document.getElementById('page-' + page).classList.remove('hidden');
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      if (el) el.classList.add('active');
-      else document.querySelector(`.nav-item`).classList.add('active');
-      // Close mobile sidebar
-      document.getElementById('sidebar').classList.remove('open');
-    }
-
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('open');
-    }
-
-    /* ══════════════════════════════════════════════
-       LOAD DATA
-       ══════════════════════════════════════════════ */
-    async function loadStats() {
-      if (!db) return;
-      try {
-        // Calls today
-        const hoy = new Date(); hoy.setHours(0,0,0,0);
-        const hoyTs = hoy.getTime();
-
-        const llamadasSnap = await db.collection('llamadas').orderBy('ts', 'desc').limit(200).get();
-        const llamadas = llamadasSnap.docs.map(d => d.data());
-
-        const citasSnap = await db.collection('citas_bot').orderBy('ts', 'desc').limit(200).get();
-        const citas = citasSnap.docs.map(d => d.data());
-
-        const llamadasHoy = llamadas.filter(l => l.ts >= hoyTs).length;
-        const citasHoy = citas.filter(c => c.ts >= hoyTs).length;
-        const pendientes = citas.filter(c => c.estado === 'pendiente' || c.estado === 'pendiente_confirmacion').length;
-        const duraciones = llamadas.filter(l => l.duracion).map(l => l.duracion);
-        const durProm = duraciones.length ? Math.round(duraciones.reduce((a,b) => a+b, 0) / duraciones.length) : 0;
-
-        document.getElementById('stat-llamadas-hoy').textContent = llamadasHoy;
-        document.getElementById('stat-citas-hoy').textContent = citasHoy;
-        document.getElementById('stat-pendientes').textContent = pendientes;
-        document.getElementById('stat-duracion').textContent = durProm + 's';
-      } catch(e) {
-        console.error('loadStats error:', e);
-      }
-    }
-
-    async function loadLlamadas() {
-      if (!db) return;
-      try {
-        const snap = await db.collection('llamadas').orderBy('ts', 'desc').limit(100).get();
-        const llamadas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-        if (llamadas.length === 0) {
-          document.getElementById('recent-calls-table').innerHTML = '<div class="empty-state"><i class="fa-solid fa-phone-slash"></i><p>Sin llamadas registradas</p></div>';
-          document.getElementById('all-calls-table').innerHTML = '<div class="empty-state"><i class="fa-solid fa-phone-slash"></i><p>Sin llamadas registradas</p></div>';
-          return;
-        }
-
-        const estadoBadge = (estado) => {
-          const map = {
-            activa: '<span class="badge badge-active">Activa</span>',
-            en_conversacion: '<span class="badge badge-active">En Conversación</span>',
-            finalizada: '<span class="badge badge-completed">Finalizada</span>',
-            completed: '<span class="badge badge-completed">Completada</span>',
-            'no-answer': '<span class="badge badge-pending">Sin Respuesta</span>',
-            derivada_dueno: '<span class="badge badge-pending">Derivada a Dueña</span>',
-          };
-          return map[estado] || `<span class="badge badge-pending">${estado}</span>`;
-        };
-
-        const formatDate = (ts) => {
-          const d = new Date(ts);
-          return d.toLocaleDateString('es-VE') + ' ' + d.toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' });
-        };
-
-        let html = `<table>
-          <thead><tr><th>Fecha</th><th>Número</th><th>Estado</th><th>Duración</th><th>Intención</th><th>Conversación</th></tr></thead><tbody>`;
-
-        llamadas.forEach(l => {
-          html += `<tr>
-            <td class="mono" style="font-size:11px">${formatDate(l.ts)}</td>
-            <td class="mono" style="font-size:11px">${(l.callerNumber || '—').replace('+58','').replace('+593','')}</td>
-            <td>${estadoBadge(l.estado)}</td>
-            <td>${l.duracion ? l.duracion + 's' : '—'}</td>
-            <td>${l.intencion || '—'}</td>
-            <td><button class="btn btn-ghost btn-sm" onclick="verConversacion('${l.callSid || l.id}')"><i class="fa-solid fa-eye"></i> Ver</button></td>
-          </tr>`;
-        });
-
-        html += '</tbody></table>';
-        document.getElementById('recent-calls-table').innerHTML = html;
-        document.getElementById('all-calls-table').innerHTML = html;
-      } catch(e) {
-        console.error('loadLlamadas error:', e);
-        toast('Error cargando llamadas', 'error');
-      }
-    }
-
-    async function verConversacion(callSid) {
-      showPage('conversaciones');
-      const container = document.getElementById('conv-container');
-
-      if (!db) { container.innerHTML = '<div class="empty-state"><p>No hay conexión a Firebase</p></div>'; return; }
-
-      try {
-        const doc = await db.collection('conversaciones').doc(callSid).get();
-        if (!doc.exists) {
-          container.innerHTML = '<div class="empty-state"><i class="fa-solid fa-comment-slash"></i><p>No se encontró la conversación</p></div>';
-          return;
-        }
-
-        const data = doc.data();
-        const msgs = data.mensajes || [];
-
-        if (msgs.length === 0) {
-          container.innerHTML = '<div class="empty-state"><i class="fa-solid fa-comment-slash"></i><p>Conversación vacía</p></div>';
-          return;
-        }
-
-        let html = `<div style="margin-bottom:12px"><span class="badge badge-active mono">${callSid}</span></div>`;
-
-        msgs.forEach(m => {
-          const isUser = m.role === 'user';
-          html += `<div class="chat-bubble ${isUser ? 'chat-user' : 'chat-mary'}">
-            <div class="chat-role">${isUser ? '👤 Clienta' : '🤖 Mary'}</div>
-            ${m.text}
-            <div style="font-size:10px;color:var(--text3);margin-top:4px">${new Date(m.ts).toLocaleTimeString('es-VE')}</div>
-          </div>`;
-        });
-
-        container.innerHTML = html;
-      } catch(e) {
-        console.error('verConversacion error:', e);
-        container.innerHTML = '<div class="empty-state"><p>Error cargando conversación</p></div>';
-      }
-    }
-
-    async function loadCitas() {
-      if (!db) return;
-      try {
-        const snap = await db.collection('citas_bot').orderBy('ts', 'desc').limit(50).get();
-        const citas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-        const container = document.getElementById('citas-container');
-
-        if (citas.length === 0) {
-          container.innerHTML = '<div class="empty-state"><i class="fa-solid fa-calendar-xmark"></i><p>No hay citas registradas por el bot</p></div>';
-          return;
-        }
-
-        const estadoBadge = (estado) => {
-          const map = {
-            pendiente: '<span class="badge badge-pending">Pendiente</span>',
-            pendiente_confirmacion: '<span class="badge badge-pending">Pendiente Confirmación</span>',
-            confirmada: '<span class="badge badge-confirmed">Confirmada</span>',
-            cancelada: '<span class="badge badge-cancelled">Cancelada</span>',
-            completada: '<span class="badge badge-completed">Completada</span>',
-          };
-          return map[estado] || `<span class="badge badge-pending">${estado}</span>`;
-        };
-
-        let html = `<table>
-          <thead><tr><th>Fecha</th><th>Número</th><th>Qué Pidió</th><th>Respuesta Mary</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>`;
-
-        citas.forEach(c => {
-          const fecha = new Date(c.ts).toLocaleString('es-VE', { dateStyle: 'short', timeStyle: 'short' });
-          const numero = (c.callerNumber || '—').replace('+58','').replace('+593','');
-          html += `<tr>
-            <td class="mono" style="font-size:11px">${fecha}</td>
-            <td class="mono" style="font-size:11px">${numero}</td>
-            <td style="font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${(c.transcripcion||'').replace(/"/g,'&quot;')}">${c.transcripcion || '—'}</td>
-            <td style="font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${(c.respuestaMary||'').replace(/"/g,'&quot;')}">${c.respuestaMary || '—'}</td>
-            <td>${estadoBadge(c.estado)}</td>
-            <td>
-              <button class="btn btn-success btn-sm" onclick="confirmarCita('${c.id}')"><i class="fa-solid fa-check"></i></button>
-              <button class="btn btn-danger btn-sm" onclick="cancelarCita('${c.id}')"><i class="fa-solid fa-times"></i></button>
-            </td>
-          </tr>`;
-        });
-
-        html += '</tbody></table>';
-        container.innerHTML = html;
-      } catch(e) {
-        console.error('loadCitas error:', e);
-        toast('Error cargando citas', 'error');
-      }
-    }
-
-    async function confirmarCita(id) {
-      if (!db) return;
-      try {
-        await db.collection('citas_bot').doc(id).update({
-          estado: 'confirmada',
-          actualizada: Date.now(),
-        });
-        toast('Cita confirmada', 'success');
-        loadCitas();
-        loadStats();
-      } catch(e) {
-        toast('Error: ' + e.message, 'error');
-      }
-    }
-
-    async function cancelarCita(id) {
-      if (!db) return;
-      try {
-        await db.collection('citas_bot').doc(id).update({
-          estado: 'cancelada',
-          actualizada: Date.now(),
-        });
-        toast('Cita cancelada', 'info');
-        loadCitas();
-        loadStats();
-      } catch(e) {
-        toast('Error: ' + e.message, 'error');
-      }
-    }
-
-    async function guardarConfig() {
-      if (!db) return;
-      try {
-        const cfg = {
-          nombre: document.getElementById('cfg-nombre').value.trim(),
-          asistente: document.getElementById('cfg-asistente').value.trim(),
-          horarios: document.getElementById('cfg-horarios').value.trim(),
-          tono: document.getElementById('cfg-tono').value.trim(),
-          instrucciones: document.getElementById('cfg-instrucciones').value.trim(),
-        };
-        await db.collection('config').doc('salon').set(cfg, { merge: true });
-        toast('Configuración del salón guardada', 'success');
-      } catch(e) {
-        toast('Error guardando: ' + e.message, 'error');
-      }
-    }
-
-    function mostrarServicios() {
-      const el = document.getElementById('servicios-lista');
-      el.classList.toggle('hidden');
-      if (!el.classList.contains('hidden') && !el.innerHTML) {
-        // Services data embedded
-        const services = [
-          {nombre:'Manicura Clásica',precio:10,duracion:40,cat:'Manicura'},
-          {nombre:'Manicura con Esmaltado Tradicional',precio:12,duracion:50,cat:'Manicura'},
-          {nombre:'Manicura con Semi Permanente',precio:18,duracion:60,cat:'Manicura'},
-          {nombre:'Manicura Spa Premium',precio:22,duracion:60,cat:'Manicura'},
-          {nombre:'Pedicura Clásica',precio:12,duracion:50,cat:'Pedicura'},
-          {nombre:'Pedicura con Esmaltado Tradicional',precio:15,duracion:60,cat:'Pedicura'},
-          {nombre:'Pedicura con Semi Permanente',precio:18,duracion:65,cat:'Pedicura'},
-          {nombre:'Pedicura Spa Premium',precio:25,duracion:75,cat:'Pedicura'},
-          {nombre:'Esmaltado Semi Permanente Manos',precio:18,duracion:60,cat:'Semi Permanente'},
-          {nombre:'Esmaltado Semi Permanente Pies',precio:15,duracion:50,cat:'Semi Permanente'},
-          {nombre:'Retoque Semi Permanente',precio:10,duracion:40,cat:'Semi Permanente'},
-          {nombre:'Esmaltado Tradicional Manos',precio:8,duracion:30,cat:'Tradicional'},
-          {nombre:'Esmaltado Tradicional Pies',precio:10,duracion:40,cat:'Tradicional'},
-          {nombre:'Cambio de Esmalte',precio:5,duracion:20,cat:'Tradicional'},
-          {nombre:'Uñas Gel Full Set',precio:25,duracion:90,cat:'Gel'},
-          {nombre:'Retoque Gel',precio:15,duracion:60,cat:'Gel'},
-          {nombre:'Gel Overlay',precio:20,duracion:75,cat:'Gel'},
-          {nombre:'Sistema Dual Full Set',precio:28,duracion:100,cat:'Sistema Dual'},
-          {nombre:'Retoque Sistema Dual',precio:18,duracion:70,cat:'Sistema Dual'},
-          {nombre:'Uñas Acrílicas Full Set',precio:25,duracion:90,cat:'Acrílicas'},
-          {nombre:'Retoque Acrílico',precio:15,duracion:60,cat:'Acrílicas'},
-          {nombre:'Acrigel Full Set',precio:28,duracion:90,cat:'Acrigel'},
-          {nombre:'Retoque Acrigel',precio:16,duracion:65,cat:'Acrigel'},
-          {nombre:'Polygel Full Set',precio:30,duracion:100,cat:'Polygel'},
-          {nombre:'Retoque Polygel',precio:18,duracion:70,cat:'Polygel'},
-          {nombre:'Nail Art (por uña)',precio:3,duracion:10,cat:'Nail Art'},
-          {nombre:'Nail Art Set Completo',precio:10,duracion:30,cat:'Nail Art'},
-          {nombre:'Diseño con Accesorios',precio:12,duracion:35,cat:'Nail Art'},
-          {nombre:'Spa de Manos',precio:12,duracion:45,cat:'Spa'},
-          {nombre:'Spa de Pies',precio:15,duracion:50,cat:'Spa'},
-          {nombre:'Retiro de Acrílico/Gel',precio:8,duracion:30,cat:'Retoque'},
-          {nombre:'Encapsulado',precio:15,duracion:50,cat:'Retoque'},
-        ];
-        let html = '<table><thead><tr><th>Servicio</th><th>Categoría</th><th>Precio</th><th>Duración</th></tr></thead><tbody>';
-        services.forEach(s => {
-          html += `<tr><td>${s.nombre}</td><td><span class="badge badge-active">${s.cat}</span></td><td>$${s.precio}</td><td>${s.duracion} min</td></tr>`;
-        });
-        html += '</tbody></table>';
-        el.innerHTML = html;
-      }
-    }
-
-    // Auto-refresh stats every 30 seconds
-    setInterval(() => {
-      if (db) loadStats();
-    }, 30000);
-
-    // Init on load
     initFirebase();
+  }
+
+  function verificarSesion() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(LOCK_KEY));
+      if (!saved || !esCodigoValido(saved.code)) return false;
+      // Codigos demo expiran en 5 dias
+      if (saved.code.startsWith('MDEMO-')) {
+        const dias5 = 5 * 24 * 60 * 60 * 1000;
+        if (Date.now() - saved.ts > dias5) {
+          localStorage.removeItem(LOCK_KEY);
+          return false;
+        }
+      }
+      return saved.code;
+    } catch(e) { return false; }
+  }
+
+  /* ── Proteccion con contraseña admin ── */
+  let _pendingAdminAction = null;
+
+  function pedirAdminPw(accion) {
+    _pendingAdminAction = accion;
+    document.getElementById('adminPwInput').value = '';
+    document.getElementById('adminPwError').textContent = '';
+    document.getElementById('modalAdminPw').classList.add('open');
+    setTimeout(() => document.getElementById('adminPwInput').focus(), 100);
+  }
+
+  function cerrarAdminPw() {
+    document.getElementById('modalAdminPw').classList.remove('open');
+    _pendingAdminAction = null;
+  }
+
+  function verificarAdminPw() {
+    const pw = document.getElementById('adminPwInput').value;
+    if (pw === ADMIN_PW) {
+      cerrarAdminPw();
+      if (_pendingAdminAction === 'pro') generarLicenciaPro();
+      else if (_pendingAdminAction === 'demo') generarLicenciaDemo();
+    } else {
+      document.getElementById('adminPwError').textContent = 'Contraseña incorrecta.';
+    }
+  }
+
+  /* ── Generacion de licencias ── */
+  function randomSegment(len) {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let out = '';
+    for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
+    return out;
+  }
+
+  function generarLicenciaPro() {
+    const code = `MARY-${randomSegment(4)}-${randomSegment(4)}`;
+    document.getElementById('out-pro').textContent = code;
+    document.getElementById('copiar-pro').classList.remove('hidden');
+    toast('Codigo PRO generado', 'success');
+  }
+
+  function generarLicenciaDemo() {
+    const code = `MDEMO-${randomSegment(4)}-${randomSegment(4)}`;
+    document.getElementById('out-demo').textContent = code;
+    document.getElementById('copiar-demo').classList.remove('hidden');
+    toast('Codigo DEMO generado (valido 5 dias)', 'info');
+  }
+
+  function copiarCodigo(elId) {
+    const text = document.getElementById(elId).textContent;
+    navigator.clipboard.writeText(text).then(() => toast('Codigo copiado al portapapeles', 'success'));
+  }
+
+  /* ══════════════════════════════════════════════
+     FIREBASE & CONFIG
+     ══════════════════════════════════════════════ */
+  let db, functions, fbConfig;
+  const LS_KEY = 'mary_bot_config_v2';
+
+  // Config precargada del proyecto
+  const FIREBASE_CONFIG_PRESET = {
+    apiKey: "AIzaSyA4pc_laIMG3JJYAFARV0LHDGYtXEMIe9c",
+    authDomain: "nail-bot-mary.firebaseapp.com",
+    projectId: "nail-bot-mary",
+    storageBucket: "nail-bot-mary.firebasestorage.app",
+    messagingSenderId: "232364416253",
+    appId: "1:232364416253:web:4732e603436ac4d06df294"
+  };
+
+  function getSavedConfig() {
+    try { return JSON.parse(localStorage.getItem(LS_KEY)) || null; } catch(e) { return null; }
+  }
+  function saveConfig(cfg) { localStorage.setItem(LS_KEY, JSON.stringify(cfg)); }
+
+  function initFirebase() {
+    let activeCfg = getSavedConfig();
+    if (!activeCfg || !activeCfg.projectId) {
+      activeCfg = FIREBASE_CONFIG_PRESET;
+      saveConfig(activeCfg);
+    }
+    if (!activeCfg.projectId) {
+      document.getElementById('setupOverlay').classList.remove('hidden');
+      return;
+    }
+    try {
+      if (!firebase.apps.length) {
+        firebase.initializeApp({
+          apiKey: activeCfg.apiKey,
+          authDomain: activeCfg.authDomain,
+          projectId: activeCfg.projectId,
+          storageBucket: activeCfg.storageBucket || activeCfg.projectId + '.appspot.com',
+          messagingSenderId: activeCfg.messagingSenderId || '',
+          appId: activeCfg.appId,
+        });
+      }
+      db = firebase.firestore();
+      functions = firebase.functions();
+      fbConfig = activeCfg;
+      document.getElementById('setupOverlay').classList.add('hidden');
+      // Rellenar form API
+      document.getElementById('api-project-id').value = activeCfg.projectId || '';
+      document.getElementById('api-fb-key').value = activeCfg.apiKey || '';
+      document.getElementById('api-auth-domain').value = activeCfg.authDomain || '';
+      document.getElementById('api-app-id').value = activeCfg.appId || '';
+      // Cargar datos
+      loadStats();
+      loadLlamadas();
+    } catch(e) {
+      console.error('Firebase init error:', e);
+      toast('Error conectando Firebase: ' + e.message, 'error');
+    }
+  }
+
+  function guardarSetup() {
+    const cfg = {
+      projectId: document.getElementById('setup-fb-project-id').value.trim(),
+      apiKey: document.getElementById('setup-fb-api-key').value.trim(),
+      authDomain: document.getElementById('setup-fb-auth-domain').value.trim(),
+      appId: document.getElementById('setup-fb-app-id').value.trim(),
+    };
+    if (!cfg.projectId || !cfg.apiKey) { toast('Project ID y API Key son obligatorios', 'error'); return; }
+    saveConfig(cfg);
+    toast('Configuracion guardada', 'success');
+    location.reload();
+  }
+
+  function guardarFirebaseConfig() {
+    const cfg = getSavedConfig() || {};
+    cfg.projectId = document.getElementById('api-project-id').value.trim();
+    cfg.apiKey = document.getElementById('api-fb-key').value.trim();
+    cfg.authDomain = document.getElementById('api-auth-domain').value.trim();
+    cfg.appId = document.getElementById('api-app-id').value.trim();
+    saveConfig(cfg);
+    toast('Firebase config guardada. Recargando...', 'success');
+    setTimeout(() => location.reload(), 1200);
+  }
+
+  /* ══════════════════════════════════════════════
+     TOAST
+     ══════════════════════════════════════════════ */
+  function toast(msg, type = 'info') {
+    const c = document.getElementById('toast-container');
+    const icons = { success: 'fa-check-circle', error: 'fa-times-circle', info: 'fa-info-circle', warn: 'fa-exclamation-triangle' };
+    const colors = { success: 'var(--success)', error: 'var(--danger)', info: 'var(--info)', warn: 'var(--warn)' };
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.innerHTML = `<i class="fa-solid ${icons[type]||'fa-info-circle'}" style="color:${colors[type]||'var(--info)'}"></i> ${msg}`;
+    c.appendChild(t);
+    setTimeout(() => t.remove(), 4000);
+  }
+
+  /* ══════════════════════════════════════════════
+     NAVEGACION
+     ══════════════════════════════════════════════ */
+  function showPage(page, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+    const pg = document.getElementById('page-' + page);
+    if (pg) pg.classList.remove('hidden');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    if (el) el.classList.add('active');
+    document.getElementById('sidebar').classList.remove('open');
+  }
+
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+  }
+
+  /* ══════════════════════════════════════════════
+     HELPERS DE UI
+     ══════════════════════════════════════════════ */
+  function estadoBadge(estado) {
+    const map = {
+      activa: '<span class="badge badge-active">Activa</span>',
+      en_conversacion: '<span class="badge badge-active">En Conversacion</span>',
+      finalizada: '<span class="badge badge-completed">Finalizada</span>',
+      completed: '<span class="badge badge-completed">Completada</span>',
+      'no-answer': '<span class="badge badge-pending">Sin Respuesta</span>',
+      derivada_dueno: '<span class="badge badge-pending">Derivada a Duena</span>',
+      failed: '<span class="badge badge-cancelled">Fallida</span>',
+      busy: '<span class="badge badge-cancelled">Ocupada</span>',
+    };
+    return map[estado] || `<span class="badge badge-pending">${estado||'—'}</span>`;
+  }
+
+  function citaEstadoBadge(estado) {
+    const map = {
+      pendiente: '<span class="badge badge-pending">Pendiente</span>',
+      pendiente_confirmacion: '<span class="badge badge-pending">Pend. Confirmacion</span>',
+      confirmada: '<span class="badge badge-confirmed">Confirmada</span>',
+      cancelada: '<span class="badge badge-cancelled">Cancelada</span>',
+      completada: '<span class="badge badge-completed">Completada</span>',
+    };
+    return map[estado] || `<span class="badge badge-pending">${estado||'—'}</span>`;
+  }
+
+  function formatDate(ts) {
+    if (!ts) return '—';
+    const d = new Date(ts);
+    return d.toLocaleDateString('es-VE') + ' ' + d.toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function formatPhone(num) {
+    if (!num) return '—';
+    return num.replace('+58', '0').replace('+593', '0593');
+  }
+
+  /* ══════════════════════════════════════════════
+     LOAD DATA
+     ══════════════════════════════════════════════ */
+  let _allLlamadas = [];
+  let _allCitas = [];
+
+  async function loadStats() {
+    if (!db) return;
+    try {
+      const hoy = new Date(); hoy.setHours(0,0,0,0);
+      const hoyTs = hoy.getTime();
+
+      const llamadasSnap = await db.collection('llamadas').orderBy('ts', 'desc').limit(500).get();
+      const llamadas = llamadasSnap.docs.map(d => d.data());
+
+      const citasSnap = await db.collection('citas_bot').orderBy('ts', 'desc').limit(500).get();
+      const citas = citasSnap.docs.map(d => d.data());
+
+      const llamadasHoy = llamadas.filter(l => l.ts >= hoyTs).length;
+      const citasHoy = citas.filter(c => c.ts >= hoyTs).length;
+      const pendientes = citas.filter(c => c.estado === 'pendiente' || c.estado === 'pendiente_confirmacion').length;
+      const duraciones = llamadas.filter(l => l.duracion).map(l => l.duracion);
+      const durProm = duraciones.length ? Math.round(duraciones.reduce((a,b) => a+b, 0) / duraciones.length) : 0;
+      const confirmadas = citas.filter(c => c.estado === 'confirmada').length;
+      const tasaConversion = llamadas.length > 0 ? Math.round((confirmadas / llamadas.length) * 100) : 0;
+
+      document.getElementById('stat-llamadas-hoy').textContent = llamadasHoy;
+      document.getElementById('stat-citas-hoy').textContent = citasHoy;
+      document.getElementById('stat-pendientes').textContent = pendientes;
+      document.getElementById('stat-duracion').textContent = durProm + 's';
+      document.getElementById('stat-conversion').textContent = tasaConversion + '%';
+      document.getElementById('stat-total').textContent = llamadas.length;
+
+      // Badge de citas pendientes en sidebar
+      const badgeEl = document.getElementById('badge-citas');
+      if (pendientes > 0) {
+        badgeEl.textContent = pendientes;
+        badgeEl.classList.remove('hidden');
+      } else {
+        badgeEl.classList.add('hidden');
+      }
+    } catch(e) { console.error('loadStats error:', e); }
+  }
+
+  async function loadLlamadas() {
+    if (!db) return;
+    try {
+      const snap = await db.collection('llamadas').orderBy('ts', 'desc').limit(200).get();
+      _allLlamadas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderLlamadas(_allLlamadas);
+      renderConvList(_allLlamadas.slice(0, 30));
+    } catch(e) {
+      console.error('loadLlamadas error:', e);
+      toast('Error cargando llamadas', 'error');
+    }
+  }
+
+  function renderLlamadas(llamadas) {
+    if (llamadas.length === 0) {
+      const empty = '<div class="empty-state"><i class="fa-solid fa-phone-slash"></i><p>Sin llamadas</p></div>';
+      document.getElementById('recent-calls-table').innerHTML = empty;
+      document.getElementById('all-calls-table').innerHTML = empty;
+      return;
+    }
+
+    let html = `<table>
+      <thead><tr><th>Fecha</th><th>Numero</th><th>Estado</th><th>Duracion</th><th>Intencion</th><th>Turnos</th><th>Ver</th></tr></thead><tbody>`;
+
+    llamadas.forEach(l => {
+      html += `<tr>
+        <td class="mono" style="font-size:11px">${formatDate(l.ts)}</td>
+        <td class="mono" style="font-size:11px">${formatPhone(l.callerNumber)}</td>
+        <td>${estadoBadge(l.estado)}</td>
+        <td>${l.duracion ? l.duracion + 's' : '—'}</td>
+        <td>${l.ultimaIntencion || l.intencion || '—'}</td>
+        <td style="text-align:center">${l.turnos || '—'}</td>
+        <td>
+          <button class="btn btn-ghost btn-sm" onclick="verConversacion('${l.callSid || l.id}')">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+          <a class="btn btn-ghost btn-sm" href="https://wa.me/${(l.callerNumber||'').replace(/\D/g,'')}" target="_blank" title="Contactar por WhatsApp">
+            <i class="fa-brands fa-whatsapp" style="color:var(--success)"></i>
+          </a>
+        </td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+
+    document.getElementById('recent-calls-table').innerHTML = html;
+    document.getElementById('all-calls-table').innerHTML = html;
+  }
+
+  function filtrarLlamadas() {
+    const search = document.getElementById('filter-llamadas-search').value.toLowerCase();
+    const estado = document.getElementById('filter-llamadas-estado').value;
+    const intencion = document.getElementById('filter-llamadas-intencion').value;
+
+    const filtered = _allLlamadas.filter(l => {
+      const matchSearch = !search || (l.callerNumber || '').toLowerCase().includes(search);
+      const matchEstado = !estado || l.estado === estado;
+      const matchIntencion = !intencion || (l.ultimaIntencion || l.intencion || '') === intencion;
+      return matchSearch && matchEstado && matchIntencion;
+    });
+    renderLlamadas(filtered);
+  }
+
+  function renderConvList(llamadas) {
+    if (!llamadas.length) return;
+    let html = '<div style="max-height:500px;overflow-y:auto">';
+    llamadas.forEach(l => {
+      html += `<div style="padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s"
+        onmouseover="this.style.background='rgba(214,51,132,0.06)'" onmouseout="this.style.background=''"
+        onclick="verConversacion('${l.callSid || l.id}')">
+        <div style="font-size:12px;font-weight:600">${formatPhone(l.callerNumber)}</div>
+        <div style="font-size:11px;color:var(--text3)">${formatDate(l.ts)} · ${l.ultimaIntencion || l.intencion || 'general'}</div>
+        <div>${estadoBadge(l.estado)}</div>
+      </div>`;
+    });
+    html += '</div>';
+    document.getElementById('conv-list-container').innerHTML = html;
+  }
+
+  async function verConversacion(callSid) {
+    showPage('conversaciones');
+    const container = document.getElementById('conv-container');
+    container.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Cargando...</p></div>';
+
+    if (!db) { container.innerHTML = '<div class="empty-state"><p>No hay conexion a Firebase</p></div>'; return; }
+    try {
+      const doc = await db.collection('conversaciones').doc(callSid).get();
+      if (!doc.exists) {
+        container.innerHTML = '<div class="empty-state"><i class="fa-solid fa-comment-slash"></i><p>No se encontro la conversacion</p></div>';
+        return;
+      }
+      const msgs = doc.data().mensajes || [];
+      if (!msgs.length) {
+        container.innerHTML = '<div class="empty-state"><i class="fa-solid fa-comment-slash"></i><p>Conversacion vacia</p></div>';
+        return;
+      }
+      let html = `<div style="margin-bottom:12px;display:flex;align-items:center;gap:8px">
+        <span class="badge badge-active mono" style="font-size:11px">${callSid}</span>
+        <span class="text-muted">${msgs.length} mensajes</span>
+      </div><div style="display:flex;flex-direction:column;gap:4px">`;
+      msgs.forEach(m => {
+        const isUser = m.role === 'user';
+        html += `<div class="chat-bubble ${isUser ? 'chat-user' : 'chat-mary'}">
+          <div class="chat-role">${isUser ? 'Clienta' : 'Mary'}</div>
+          ${m.text || ''}
+          <div style="font-size:10px;color:var(--text3);margin-top:4px">${new Date(m.ts).toLocaleTimeString('es-VE')}</div>
+        </div>`;
+      });
+      html += '</div>';
+      container.innerHTML = html;
+    } catch(e) {
+      container.innerHTML = '<div class="empty-state"><p>Error cargando conversacion</p></div>';
+    }
+  }
+
+  async function loadCitas() {
+    if (!db) return;
+    try {
+      const snap = await db.collection('citas_bot').orderBy('ts', 'desc').limit(100).get();
+      _allCitas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      filtrarCitas();
+    } catch(e) {
+      toast('Error cargando citas', 'error');
+    }
+  }
+
+  function filtrarCitas() {
+    const estadoFilter = document.getElementById('filter-citas-estado').value;
+    const filtered = estadoFilter ? _allCitas.filter(c => c.estado === estadoFilter) : _allCitas;
+    renderCitas(filtered);
+  }
+
+  function renderCitas(citas) {
+    const container = document.getElementById('citas-container');
+    if (!citas.length) {
+      container.innerHTML = '<div class="empty-state"><i class="fa-solid fa-calendar-xmark"></i><p>No hay citas registradas</p></div>';
+      return;
+    }
+    let html = `<table>
+      <thead><tr><th>Fecha</th><th>Numero</th><th>Solicitud</th><th>Respuesta Mary</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>`;
+    citas.forEach(c => {
+      const num = (c.callerNumber || '').replace(/\D/g, '');
+      html += `<tr>
+        <td class="mono" style="font-size:11px">${formatDate(c.ts)}</td>
+        <td class="mono" style="font-size:11px">${formatPhone(c.callerNumber)}</td>
+        <td style="font-size:12px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${(c.transcripcion||'').replace(/"/g,'&quot;')}">${c.transcripcion || '—'}</td>
+        <td style="font-size:12px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${(c.respuestaMary||'').replace(/"/g,'&quot;')}">${c.respuestaMary || '—'}</td>
+        <td>${citaEstadoBadge(c.estado)}</td>
+        <td style="white-space:nowrap">
+          <button class="btn btn-success btn-sm" onclick="cambiarEstadoCita('${c.id}','confirmada')" title="Confirmar"><i class="fa-solid fa-check"></i></button>
+          <button class="btn btn-danger btn-sm" onclick="cambiarEstadoCita('${c.id}','cancelada')" title="Cancelar"><i class="fa-solid fa-times"></i></button>
+          <button class="btn btn-ghost btn-sm" onclick="cambiarEstadoCita('${c.id}','completada')" title="Marcar completada"><i class="fa-solid fa-flag-checkered"></i></button>
+          ${num ? `<a class="btn btn-ghost btn-sm" href="https://wa.me/${num}" target="_blank" title="WhatsApp"><i class="fa-brands fa-whatsapp" style="color:var(--success)"></i></a>` : ''}
+        </td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+    container.innerHTML = html;
+  }
+
+  async function cambiarEstadoCita(id, estado) {
+    if (!db) return;
+    try {
+      await db.collection('citas_bot').doc(id).update({ estado, actualizada: Date.now() });
+      const labels = { confirmada: 'Cita confirmada', cancelada: 'Cita cancelada', completada: 'Cita marcada como completada' };
+      toast(labels[estado] || 'Estado actualizado', estado === 'confirmada' ? 'success' : 'info');
+      loadCitas();
+      loadStats();
+    } catch(e) { toast('Error: ' + e.message, 'error'); }
+  }
+
+  async function guardarConfig() {
+    if (!db) { toast('Sin conexion a Firebase', 'error'); return; }
+    try {
+      const cfg = {
+        nombre: document.getElementById('cfg-nombre').value.trim(),
+        asistente: document.getElementById('cfg-asistente').value.trim(),
+        horarios: document.getElementById('cfg-horarios').value.trim(),
+        tono: document.getElementById('cfg-tono').value.trim(),
+        instrucciones: document.getElementById('cfg-instrucciones').value.trim(),
+        ownerWhatsApp: document.getElementById('cfg-owner-wa').value.trim(),
+      };
+      await db.collection('config').doc('salon').set(cfg, { merge: true });
+      toast('Configuracion del salon guardada', 'success');
+    } catch(e) { toast('Error guardando: ' + e.message, 'error'); }
+  }
+
+  /* ── Voz Test ── */
+  function testVoz() {
+    const texto = document.getElementById('voice-test-text').value.trim();
+    if (!texto) { toast('Escribe un texto para probar', 'warn'); return; }
+    const resultado = document.getElementById('voice-test-result');
+    // Simular el procesamiento SSML (solo preview visual)
+    const ssml = texto
+      .replace(/\. /g, '.<pause:400ms> ')
+      .replace(/\? /g, '?<pause:350ms> ')
+      .replace(/! /g, '!<pause:350ms> ')
+      .replace(/, /g, ',<pause:200ms> ');
+    resultado.innerHTML = `<div class="voice-bubble">
+      <div style="font-size:10px;color:var(--text3);margin-bottom:8px">MARY dice (Polly.Lupe-Neural, rate 95%, pitch +2%):</div>
+      ${texto}
+      <div style="margin-top:12px;font-size:11px;color:var(--text3)">SSML aplicado internamente — las pausas reales se aplican en la llamada de voz.</div>
+    </div>`;
+    // Usar Web Speech API si disponible para reproducir
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utt = new SpeechSynthesisUtterance(texto);
+      utt.lang = 'es-US';
+      utt.rate = 0.92;
+      utt.pitch = 1.1;
+      const voices = window.speechSynthesis.getVoices();
+      const spanish = voices.find(v => v.lang.startsWith('es') && v.name.toLowerCase().includes('female'));
+      if (spanish) utt.voice = spanish;
+      window.speechSynthesis.speak(utt);
+      toast('Reproduciendo muestra de voz...', 'info');
+    } else {
+      toast('Tu navegador no soporta preview de voz. Se mostrara solo el texto.', 'warn');
+    }
+  }
+
+  /* ── Servicios ── */
+  function mostrarServicios() {
+    const el = document.getElementById('servicios-lista');
+    el.classList.toggle('hidden');
+    if (!el.classList.contains('hidden') && !el.innerHTML.includes('<table')) {
+      const services = [
+        {nombre:'Manicura Clasica',precio:10,duracion:40,cat:'Manicura'},
+        {nombre:'Manicura con Esmaltado Tradicional',precio:12,duracion:50,cat:'Manicura'},
+        {nombre:'Manicura con Semi Permanente',precio:18,duracion:60,cat:'Manicura'},
+        {nombre:'Manicura Spa Premium',precio:22,duracion:60,cat:'Manicura'},
+        {nombre:'Pedicura Clasica',precio:12,duracion:50,cat:'Pedicura'},
+        {nombre:'Pedicura con Esmaltado Tradicional',precio:15,duracion:60,cat:'Pedicura'},
+        {nombre:'Pedicura con Semi Permanente',precio:18,duracion:65,cat:'Pedicura'},
+        {nombre:'Pedicura Spa Premium',precio:25,duracion:75,cat:'Pedicura'},
+        {nombre:'Esmaltado Semi Permanente Manos',precio:18,duracion:60,cat:'Semi Permanente'},
+        {nombre:'Esmaltado Semi Permanente Pies',precio:15,duracion:50,cat:'Semi Permanente'},
+        {nombre:'Retoque Semi Permanente',precio:10,duracion:40,cat:'Semi Permanente'},
+        {nombre:'Esmaltado Tradicional Manos',precio:8,duracion:30,cat:'Tradicional'},
+        {nombre:'Esmaltado Tradicional Pies',precio:10,duracion:40,cat:'Tradicional'},
+        {nombre:'Cambio de Esmalte',precio:5,duracion:20,cat:'Tradicional'},
+        {nombre:'Unas Gel Full Set',precio:25,duracion:90,cat:'Gel'},
+        {nombre:'Retoque Gel',precio:15,duracion:60,cat:'Gel'},
+        {nombre:'Gel Overlay',precio:20,duracion:75,cat:'Gel'},
+        {nombre:'Sistema Dual Full Set',precio:28,duracion:100,cat:'Sistema Dual'},
+        {nombre:'Retoque Sistema Dual',precio:18,duracion:70,cat:'Sistema Dual'},
+        {nombre:'Unas Acrilicas Full Set',precio:25,duracion:90,cat:'Acrilicas'},
+        {nombre:'Retoque Acrilico',precio:15,duracion:60,cat:'Acrilicas'},
+        {nombre:'Acrigel Full Set',precio:28,duracion:90,cat:'Acrigel'},
+        {nombre:'Retoque Acrigel',precio:16,duracion:65,cat:'Acrigel'},
+        {nombre:'Polygel Full Set',precio:30,duracion:100,cat:'Polygel'},
+        {nombre:'Retoque Polygel',precio:18,duracion:70,cat:'Polygel'},
+        {nombre:'Nail Art (por una)',precio:3,duracion:10,cat:'Nail Art'},
+        {nombre:'Nail Art Set Completo',precio:10,duracion:30,cat:'Nail Art'},
+        {nombre:'Diseno con Accesorios',precio:12,duracion:35,cat:'Nail Art'},
+        {nombre:'Spa de Manos',precio:12,duracion:45,cat:'Spa'},
+        {nombre:'Spa de Pies',precio:15,duracion:50,cat:'Spa'},
+        {nombre:'Retiro de Acrilico/Gel',precio:8,duracion:30,cat:'Retoque'},
+        {nombre:'Encapsulado',precio:15,duracion:50,cat:'Retoque'},
+      ];
+      let html = '<table><thead><tr><th>Servicio</th><th>Categoria</th><th>Precio</th><th>Duracion</th></tr></thead><tbody>';
+      services.forEach(s => {
+        html += `<tr><td>${s.nombre}</td><td><span class="badge badge-active">${s.cat}</span></td><td>$${s.precio}</td><td>${s.duracion} min</td></tr>`;
+      });
+      html += '</tbody></table>';
+      el.innerHTML = html;
+    }
+  }
+
+  /* ══════════════════════════════════════════════
+     AUTO-REFRESH & INIT
+     ══════════════════════════════════════════════ */
+  setInterval(() => { if (db) { loadStats(); } }, 30000);
+
+  // Cargar voces para Web Speech API
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.onvoiceschanged = () => {};
+    window.speechSynthesis.getVoices();
+  }
+
+  // Verificar sesion guardada al cargar
+  (function init() {
+    const sesion = verificarSesion();
+    if (sesion) {
+      desbloquearApp(sesion);
+    }
+    // Si no hay sesion, la pantalla de lock ya esta visible
+  })();
   </script>
 </body>
 </html>
