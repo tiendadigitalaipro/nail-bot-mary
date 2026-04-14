@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Maestro — Mary Bot</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pink: #FF69B4;
+      --pink-deep: #FF1493;
+      --pink-light: #FFC0CB;
+      --gold: #FFD700;
+      --gold-dark: #DAA520;
+      --gold-deeper: #B8860B;
+      --bg: #FEF7FA;
+      --fg: #2D0A1E;
+      --card: #FFFFFF;
+      --card-fg: #2D0A1E;
+      --muted: #F5E8EF;
+      --muted-fg: #8B5A75;
+      --border: #F0D0E0;
+      --input: #F0D0E0;
+      --ring: #FF69B4;
+      --radius: 10px;
+      --radius-sm: calc(var(--radius) - 4px);
+      --radius-lg: var(--radius);
+      --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+      --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+      --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #FF1493, #FFD700);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 105, 180, 0.15);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out), background 160ms var(--ease-out);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary {
+      background: linear-gradient(135deg, #FF1493, #FF69B4);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(255, 20, 147, 0.25);
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--fg);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted-fg);
+      border: none;
+      padding: 8px;
+    }
+    .btn-danger {
+      background: #EF4444;
+      color: #fff;
+    }
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+    .btn-icon { width: 32px; height: 32px; padding: 0; border-radius: 8px; }
+
+    @media (hover: hover) and (pointer: fine) {
+      .btn:hover { transform: translateY(-1px); }
+      .btn-primary:hover { box-shadow: 0 6px 20px rgba(255, 20, 147, 0.35); }
+      .btn-outline:hover { background: var(--muted); }
+      .btn-ghost:hover { color: var(--pink-deep); background: var(--muted); }
+      .btn-danger:hover { background: #DC2626; }
+    }
+
+    /* Inputs */
+    .input-group { display: flex; flex-direction: column; gap: 6px; }
+    .label { font-size: 13px; font-weight: 500; color: var(--muted-fg); display: flex; align-items: center; gap: 6px; }
+    .input, .select, .textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 14px;
+      background: #fff;
+      color: var(--fg);
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+      outline: none;
+    }
+    .input:focus, .select:focus, .textarea:focus {
+      border-color: var(--pink);
+      box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.1);
+    }
+    .input:focus-visible, .select:focus-visible {
+      outline: 2px solid var(--pink);
+      outline-offset: 2px;
+    }
+    .textarea { resize: none; min-height: 60px; }
+    .select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238B5A75' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+
+    /* Cards */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .card-header { padding: 20px 24px 12px; }
+    .card-title { font-size: 18px; font-weight: 700; }
+    .card-desc { font-size: 13px; color: var(--muted-fg); margin-top: 2px; }
+    .card-content { padding: 12px 24px 24px; }
+
+    /* Badge */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: opacity 150ms ease;
+    }
+    .badge-active { background: #10B981; color: #fff; }
+    .badge-expired { background: #EF4444; color: #fff; }
+    .badge-suspended { background: #6B7280; color: #fff; }
+    .badge-expiring { background: #F59E0B; color: #fff; }
+    .badge-outline { background: transparent; border: 1px solid var(--border); color: var(--fg); }
+
+    /* Layout */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+    @media (min-width: 640px) { .container { padding: 0 24px; } }
+
+    /* Header */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      border-bottom: 1px solid var(--border);
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+    .header-logo { display: flex; align-items: center; gap: 12px; }
+    .header-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, #FF1493, #FFD700);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 18px;
+      box-shadow: 0 2px 8px rgba(255, 20, 147, 0.2);
+    }
+    .header-title { font-size: 18px; font-weight: 700; }
+    .header-sub { font-size: 11px; color: var(--muted-fg); }
+    .header-actions { display: flex; align-items: center; gap: 8px; }
+
+    /* View tabs */
+    .view-tabs {
+      display: flex;
+      background: rgba(255, 105, 180, 0.08);
+      border-radius: 8px;
+      padding: 3px;
+    }
+    .view-tab {
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      border: none;
+      background: transparent;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--muted-fg);
+      transition: background 150ms ease, color 150ms ease, box-shadow 150ms ease;
+    }
+    .view-tab.active {
+      background: linear-gradient(135deg, #FF1493, #FF69B4);
+      color: #fff;
+      box-shadow: 0 1px 4px rgba(255, 20, 147, 0.3);
+    }
+
+    /* Stats grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    @media (min-width: 768px) { .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; } }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      transition: box-shadow 200ms var(--ease-out), transform 200ms var(--ease-out);
+      opacity: 0;
+      animation: fadeInUp 300ms var(--ease-out) forwards;
+    }
+    .stats-grid .stat-card:nth-child(1) { animation-delay: 0ms; }
+    .stats-grid .stat-card:nth-child(2) { animation-delay: 50ms; }
+    .stats-grid .stat-card:nth-child(3) { animation-delay: 100ms; }
+    .stats-grid .stat-card:nth-child(4) { animation-delay: 150ms; }
+
+    @media (hover: hover) and (pointer: fine) {
+      .stat-card:hover { box-shadow: 0 4px 12px rgba(255, 105, 180, 0.15); transform: translateY(-1px); }
+      .recent-item:hover { background: rgba(255,105,180,0.04); }
+    }
+    .stat-label { font-size: 13px; color: var(--muted-fg); font-weight: 500; }
+    .stat-value { font-size: 28px; font-weight: 700; margin-top: 4px; }
+    .stat-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: linear-gradient(135deg, rgba(255,105,180,0.08), rgba(255,215,0,0.08));
+      display: flex; align-items: center; justify-content: center;
+      color: var(--pink-deep); font-size: 20px;
+    }
+    .stat-inner { display: flex; align-items: center; justify-content: space-between; }
+
+    /* Table */
+    .table-wrapper { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 12px 16px; font-size: 12px; font-weight: 600; color: var(--muted-fg); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
+    td { padding: 12px 16px; font-size: 14px; border-bottom: 1px solid var(--border); }
+    tr:hover td { background: rgba(255, 105, 180, 0.03); }
+    tr:last-child td { border-bottom: none; }
+    .salon-cell { display: flex; align-items: center; gap: 10px; }
+    .salon-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: linear-gradient(135deg, rgba(255,105,180,0.1), rgba(255,215,0,0.1));
+      display: flex; align-items: center; justify-content: center;
+      color: var(--pink); font-size: 14px;
+      flex-shrink: 0;
+    }
+    .actions-cell { display: flex; gap: 4px; justify-content: flex-end; }
+
+    /* Mobile cards */
+    .mobile-cards { display: flex; flex-direction: column; gap: 12px; }
+    .mobile-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+    }
+    .mobile-card-top { display: flex; align-items: start; justify-content: space-between; margin-bottom: 12px; }
+    .mobile-card-info { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .mobile-card-name { font-weight: 600; font-size: 14px; }
+    .mobile-card-phone { font-size: 12px; color: var(--muted-fg); }
+    .mobile-card-meta { display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--muted-fg); margin-bottom: 12px; }
+    .mobile-card-actions { display: flex; gap: 8px; }
+    .mobile-card-actions .btn { flex: 1; }
+
+    @media (min-width: 768px) { .mobile-cards { display: none; } .desktop-table { display: block; } }
+    @media (max-width: 767px) { .desktop-table { display: none; } .mobile-cards { display: flex; } .view-tabs { display: none; } }
+
+    /* Toolbar */
+    .toolbar { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+    @media (min-width: 640px) { .toolbar { flex-direction: row; } }
+    .search-wrapper { position: relative; flex: 1; }
+    .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted-fg); font-size: 14px; }
+    .search-input { padding-left: 36px; }
+    .search-clear { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--muted-fg); font-size: 14px; padding: 4px; }
+    .toolbar-actions { display: flex; gap: 8px; }
+
+    /* Filters */
+    .filters-panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .clear-filters { font-size: 13px; color: var(--pink-deep); background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+
+    /* Dialog overlay */
+    .dialog-overlay {
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px;
+      animation: fadeIn 200ms ease;
+    }
+    .dialog {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      animation: slideUp 250ms var(--ease-out);
+      transform-origin: center;
+    }
+    .dialog-header { padding: 24px 24px 12px; }
+    .dialog-title { font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .dialog-desc { font-size: 14px; color: var(--muted-fg); margin-top: 4px; }
+    .dialog-body { padding: 12px 24px 24px; }
+    .dialog-footer { padding: 16px 24px 24px; display: flex; justify-content: flex-end; gap: 8px; }
+
+    /* Expiry calc display */
+    .expiry-calc {
+      background: linear-gradient(135deg, rgba(255,105,180,0.05), rgba(255,215,0,0.05));
+      border: 1px solid rgba(255,105,180,0.1);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Login */
+    .login-bg {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #FFF0F5, #FFFFFF, #FFFAF0);
+      padding: 16px;
+    }
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,105,180,0.15);
+      border-radius: 20px;
+      padding: 40px 32px;
+      box-shadow: 0 20px 60px rgba(255,20,147,0.1);
+      animation: loginEntry 400ms cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .login-logo {
+      width: 72px; height: 72px; border-radius: 16px;
+      background: linear-gradient(135deg, #FF1493, #FFD700);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 32px;
+      box-shadow: 0 8px 24px rgba(255,20,147,0.25);
+    }
+    .login-title { font-size: 24px; font-weight: 700; text-align: center; }
+    .login-subtitle { font-size: 14px; color: var(--muted-fg); text-align: center; margin-top: 4px; }
+    .login-form { margin-top: 24px; display: flex; flex-direction: column; gap: 16px; }
+    .login-footer { text-align: center; font-size: 12px; color: var(--muted-fg); margin-top: 24px; }
+    .error-msg { color: #EF4444; font-size: 13px; display: flex; align-items: center; gap: 4px; }
+
+    /* Toast */
+    .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 200; display: flex; flex-direction: column; gap: 8px; }
+    .toast {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      font-size: 13px;
+      max-width: 360px;
+      animation: slideInRight 250ms var(--ease-out);
+      transition: transform 200ms var(--ease-out), opacity 200ms var(--ease-out);
+      display: flex;
+      align-items: start;
+      gap: 8px;
+    }
+    .toast-title { font-weight: 600; }
+    .toast-desc { color: var(--muted-fg); margin-top: 2px; }
+
+    /* Info item */
+    .info-item { display: flex; align-items: start; gap: 8px; }
+    .info-icon { color: var(--pink-deep); flex-shrink: 0; margin-top: 2px; }
+    .info-label { font-size: 11px; color: var(--muted-fg); }
+    .info-value { font-size: 13px; font-weight: 500; }
+
+    /* Empty state */
+    .empty-state { text-align: center; padding: 48px 16px; color: var(--muted-fg); }
+    .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.3; }
+    .empty-title { font-size: 16px; font-weight: 600; color: var(--fg); }
+    .empty-desc { font-size: 13px; margin-top: 4px; }
+
+    /* Footer */
+    .footer { border-top: 1px solid var(--border); padding: 16px 0; margin-top: auto; }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--muted-fg); }
+
+    /* Skeleton */
+    .skeleton { height: 48px; background: linear-gradient(90deg, var(--muted) 25%, #fff 50%, var(--muted) 75%); background-size: 200% 100%; border-radius: 8px; animation: shimmer 1.5s infinite; }
+
+    /* Separator */
+    .sep { height: 1px; background: var(--border); margin: 12px 0; }
+
+    /* Recent list item */
+    .recent-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px; border-radius: 8px; cursor: pointer;
+      transition: background 150ms ease;
+    }
+    .recent-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .recent-name { font-weight: 500; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .recent-sub { font-size: 12px; color: var(--muted-fg); }
+
+    /* Animations */
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    @keyframes slideInRight { from { opacity: 0; transform: translateY(8px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes loginEntry { from { opacity: 0; transform: scale(0.97) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+    /* Reduced motion support */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* Responsive hide */
+    .sm-hide { display: none; }
+    @media (min-width: 640px) { .sm-hide { display: inline; } }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 639px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    /* Password toggle */
+    .input-wrapper { position: relative; }
+    .pw-toggle {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: var(--muted-fg); font-size: 14px;
+      padding: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getFirestore, collection, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, query, where, orderBy, Timestamp } from "https://www.gstatic.com/firebasejs/11.9.9/firebase-firestore.js";
+
+    const firebaseConfig = {
+      projectId: "nail-bot-mary",
+      apiKey: "AIzaSyA4pc_laIMG3JJYAFARV0LHDGYtXEMIe9c",
+      authDomain: "nail-bot-mary.firebaseapp.com",
+      storageBucket: "nail-bot-mary.firebasestorage.app",
+      messagingSenderId: "884242765933",
+      appId: "1:884242765933:web:b71e9a6d2b3c4d5e6f7a8b",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app, "nail-bot-mary");
+
+    const MASTER_PASSWORD = "MBP2026MASTER";
+    const LICENSE_CONFIG = {
+      monthly: { label: "Mensual", price: 20, period: "mes", durationDays: 30 },
+      quarterly: { label: "Trimestral", price: 50, period: "trim", durationDays: 90 },
+      semiannual: { label: "Semestral", price: 90, period: "sem", durationDays: 180 },
+      annual: { label: "Anual", price: 150, period: "año", durationDays: 365 },
+    };
+
+    function calcEndDate(startDate, licenseType) {
+      const cfg = LICENSE_CONFIG[licenseType];
+      const end = new Date(startDate);
+      end.setDate(end.getDate() + cfg.durationDays);
+      return end;
+    }
+
+    function getStatus(endDate) {
+      const now = new Date();
+      return endDate.getTime() < now.getTime() ? "expired" : "active";
+    }
+
+    function isExpiringSoon(endDate) {
+      const now = new Date();
+      const diff = endDate.getTime() - now.getTime();
+      return diff > 0 && diff < 7 * 24 * 60 * 60 * 1000;
+    }
+
+    function salonFromDoc(id, data) {
+      return {
+        id, name: data.name || "", phone: data.phone || "", twilioNumber: data.twilioNumber || "",
+        licenseType: data.licenseType || "monthly", status: data.status || "active",
+        startDate: data.startDate?.toDate?.() || new Date(),
+        endDate: data.endDate?.toDate?.() || new Date(),
+        createdAt: data.createdAt?.toDate?.() || new Date(),
+        notes: data.notes || "",
+      };
+    }
+
+    // State
+    let state = {
+      authenticated: false,
+      viewMode: "dashboard",
+      salons: [],
+      allSalons: [],
+      loading: true,
+      searchTerm: "",
+      filterStatus: "all",
+      filterType: "all",
+      showFilters: false,
+      formOpen: false,
+      detailOpen: false,
+      deleteOpen: false,
+      selectedSalon: null,
+      saving: false,
+      form: { name: "", phone: "", twilioNumber: "", licenseType: "monthly", startDate: "", notes: "" },
+    };
+
+    const $app = document.getElementById("app");
+
+    function render() {
+      if (!state.authenticated) {
+        $app.innerHTML = renderLogin();
+        attachLoginEvents();
+      } else {
+        $app.innerHTML = renderPanel();
+        attachPanelEvents();
+      }
+    }
+
+    // ─── Login ───────────────────────────────────────
+    function renderLogin() {
+      return `
+        <div class="login-bg">
+          <div class="login-card">
+            <div class="login-logo">👑</div>
+            <div class="login-title gradient-text">Panel Maestro</div>
+            <div class="login-subtitle">Mary Bot — Sistema de Licencias</div>
+            <form id="loginForm" class="login-form">
+              <div class="input-group">
+                <label class="label">🔒 Contraseña de Acceso</label>
+                <div class="input-wrapper">
+                  <input type="password" id="pwInput" class="input" placeholder="Ingrese la contraseña maestra" autocomplete="off">
+                  <button type="button" class="pw-toggle" id="pwToggle">👁</button>
+                </div>
+                <div id="pwError" class="error-msg" style="display:none">❌ Contraseña incorrecta</div>
+              </div>
+              <button type="submit" class="btn btn-primary" style="width:100%; height:44px;">
+                🛡️ Acceder al Panel
+              </button>
+            </form>
+            <div class="login-footer">💅 Mary Bot — Panel de Administración</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function attachLoginEvents() {
+      const form = document.getElementById("loginForm");
+      const input = document.getElementById("pwInput");
+      const toggle = document.getElementById("pwToggle");
+      const error = document.getElementById("pwError");
+
+      toggle.addEventListener("click", () => {
+        input.type = input.type === "password" ? "text" : "password";
+      });
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (input.value === MASTER_PASSWORD) {
+          sessionStorage.setItem("mbp_auth", "true");
+          state.authenticated = true;
+          loadSalons();
+          render();
+        } else {
+          error.style.display = "flex";
+          input.value = "";
+          input.focus();
+        }
+      });
+
+      input.focus();
+    }
+
+    // ─── Panel ───────────────────────────────────────
+    function renderPanel() {
+      return `
+        <div style="min-height:100vh;display:flex;flex-direction:column;background:linear-gradient(135deg,#FEF7FA,#FFFFFF,#FFFAF0)">
+          ${renderHeader()}
+          <main class="container" style="padding-top:24px;padding-bottom:24px;">
+            ${state.viewMode === "dashboard" ? renderDashboard() : renderSalons()}
+          </main>
+          <footer class="footer">
+            <div class="container footer-inner">
+              <span>💅 Mary Bot — Panel Maestro v1.0</span>
+              <span>Sistema de Licencias</span>
+            </div>
+          </footer>
+        </div>
+        ${state.formOpen ? renderFormDialog() : ""}
+        ${state.detailOpen ? renderDetailDialog() : ""}
+        ${state.deleteOpen ? renderDeleteDialog() : ""}
+        <div class="toast-container" id="toasts"></div>
+      `;
+    }
+
+    function renderHeader() {
+      return `
+        <header class="header glass">
+          <div class="container header-inner">
+            <div class="header-logo">
+              <div class="header-icon">👑</div>
+              <div>
+                <div class="header-title gradient-text">Panel Maestro</div>
+                <div class="header-sub sm-hide">Mary Bot — Licencias</div>
+              </div>
+            </div>
+            <div class="header-actions">
+              <div class="view-tabs">
+                <button class="view-tab ${state.viewMode === "dashboard" ? "active" : ""}" data-view="dashboard">📊 Dashboard</button>
+                <button class="view-tab ${state.viewMode === "salons" ? "active" : ""}" data-view="salons">🏪 Salones</button>
+              </div>
+              <button class="btn btn-ghost btn-icon" id="logoutBtn" title="Cerrar sesión">🚪</button>
+            </div>
+          </div>
+        </header>
+      `;
+    }
+
+    function getStats() {
+      const all = state.allSalons;
+      const total = all.length;
+      const active = all.filter(s => s.status === "active" && !isExpiringSoon(s.endDate)).length;
+      const expiring = all.filter(s => s.status === "active" && isExpiringSoon(s.endDate)).length;
+      const expired = all.filter(s => s.status === "expired").length;
+      let revenue = 0;
+      all.forEach(s => { if (s.status === "active") revenue += LICENSE_CONFIG[s.licenseType].price; });
+      return { total, active, expiring, expired, revenue };
+    }
+
+    function renderDashboard() {
+      const stats = getStats();
+      const recent = state.salons.slice(0, 5);
+
+      return `
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-inner"><div><div class="stat-label">Total Salones</div><div class="stat-value">${stats.total}</div></div><div class="stat-icon">🏪</div></div></div>
+          <div class="stat-card"><div class="stat-inner"><div><div class="stat-label">Licencias Activas</div><div class="stat-value">${stats.active}</div></div><div class="stat-icon">✅</div></div></div>
+          <div class="stat-card"><div class="stat-inner"><div><div class="stat-label">Por Expirar</div><div class="stat-value">${stats.expiring}</div></div><div class="stat-icon">⚠️</div></div></div>
+          <div class="stat-card"><div class="stat-inner"><div><div class="stat-label">Ingresos Mensuales</div><div class="stat-value">$${stats.revenue}</div></div><div class="stat-icon">💰</div></div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <div class="card-title">Actividad Reciente</div>
+              <div class="card-desc">Últimos salones agregados</div>
+            </div>
+            <button class="btn btn-outline btn-sm" data-view="salons">Ver Todos ▼</button>
+          </div>
+          <div class="card-content" style="padding-top:0">
+            ${state.loading ? Array(3).fill('<div class="skeleton" style="margin-bottom:8px"></div>').join("") :
+              recent.length === 0 ? `
+                <div class="empty-state">
+                  <div class="empty-icon">🏪</div>
+                  <div class="empty-title">No hay salones aún</div>
+                  <div class="empty-desc">Agrega el primer salón para comenzar</div>
+                  <button class="btn btn-primary" style="margin-top:16px" data-action="create">➕ Agregar Salón</button>
+                </div>
+              ` : recent.map(s => `
+                <div class="recent-item" data-action="view" data-id="${s.id}">
+                  <div class="recent-left">
+                    <div class="salon-icon">🏪</div>
+                    <div>
+                      <div class="recent-name">${esc(s.name)}</div>
+                      <div class="recent-sub">${LICENSE_CONFIG[s.licenseType].label} • ${esc(s.phone)}</div>
+                    </div>
+                  </div>
+                  ${renderBadge(s)}
+                </div>
+              `).join("")
+            }
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSalons() {
+      const filtered = getFilteredSalons();
+
+      return `
+        <div class="toolbar">
+          <div class="search-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="input search-input" placeholder="Buscar por nombre, teléfono..." value="${esc(state.searchTerm)}" id="searchInput">
+            ${state.searchTerm ? '<button class="search-clear" id="clearSearch">✕</button>' : ""}
+          </div>
+          <div class="toolbar-actions">
+            <button class="btn btn-outline btn-sm" id="filterBtn">
+              🔽 Filtros
+              ${(state.filterStatus !== "all" || state.filterType !== "all") ? '<span style="width:6px;height:6px;background:#FF1493;border-radius:50%;display:inline-block;margin-left:4px"></span>' : ""}
+            </button>
+            <button class="btn btn-primary btn-sm" data-action="create">➕ <span class="sm-hide">Nuevo Salón</span></button>
+          </div>
+        </div>
+
+        ${state.showFilters ? renderFilters() : ""}
+
+        <div style="margin-bottom:16px;font-size:13px;color:var(--muted-fg)">
+          ${filtered.length} ${filtered.length === 1 ? "salón" : "salones"}${state.searchTerm ? ` para "${esc(state.searchTerm)}"` : ""}
+        </div>
+
+        ${state.loading ? Array(5).fill('<div class="card"><div class="card-content"><div class="skeleton" style="margin-bottom:8px"></div><div class="skeleton" style="margin-bottom:8px"></div><div class="skeleton"></div></div></div>').join("") :
+          filtered.length === 0 ? `
+            <div class="card">
+              <div class="card-content">
+                <div class="empty-state">
+                  <div class="empty-icon">🏪</div>
+                  <div class="empty-title">${state.searchTerm || state.filterStatus !== "all" || state.filterType !== "all" ? "No se encontraron salones" : "No hay salones registrados"}</div>
+                  <div class="empty-desc">${state.searchTerm || state.filterStatus !== "all" || state.filterType !== "all" ? "Intenta ajustar los filtros de búsqueda" : "Comienza agregando el primer salón"}</div>
+                  ${!state.searchTerm && state.filterStatus === "all" && state.filterType === "all" ? '<button class="btn btn-primary" style="margin-top:16px" data-action="create">➕ Agregar Salón</button>' : ""}
+                </div>
+              </div>
+            </div>
+          ` : `
+            <!-- Desktop Table -->
+            <div class="desktop-table">
+              <div class="card">
+                <div class="table-wrapper">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Salón</th>
+                        <th>Teléfono</th>
+                        <th>Licencia</th>
+                        <th>Expiración</th>
+                        <th>Estado</th>
+                        <th style="text-align:right">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${filtered.map(s => `
+                        <tr>
+                          <td><div class="salon-cell"><div class="salon-icon">🏪</div>${esc(s.name)}</div></td>
+                          <td style="color:var(--muted-fg)">${esc(s.phone)}</td>
+                          <td><span class="badge badge-outline">${LICENSE_CONFIG[s.licenseType].label}</span></td>
+                          <td style="color:var(--muted-fg);font-size:13px">${fmtDate(s.endDate)}</td>
+                          <td>${renderBadge(s)}</td>
+                          <td>
+                            <div class="actions-cell">
+                              <button class="btn btn-ghost btn-icon" data-action="view" data-id="${s.id}" title="Ver">👁</button>
+                              <button class="btn btn-ghost btn-icon" data-action="edit" data-id="${s.id}" title="Editar">✏️</button>
+                              <button class="btn btn-ghost btn-icon" data-action="delete" data-id="${s.id}" title="Eliminar" style="color:#EF4444">🗑</button>
+                            </div>
+                          </td>
+                        </tr>
+                      `).join("")}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <!-- Mobile Cards -->
+            <div class="mobile-cards">
+              ${filtered.map(s => `
+                <div class="mobile-card">
+                  <div class="mobile-card-top">
+                    <div class="mobile-card-info">
+                      <div class="salon-icon">🏪</div>
+                      <div>
+                        <div class="mobile-card-name">${esc(s.name)}</div>
+                        <div class="mobile-card-phone">${esc(s.phone)}</div>
+                      </div>
+                    </div>
+                    ${renderBadge(s)}
+                  </div>
+                  <div class="mobile-card-meta">
+                    <span>${LICENSE_CONFIG[s.licenseType].label} — $${LICENSE_CONFIG[s.licenseType].price}</span>
+                    <span>Exp: ${s.endDate.toLocaleDateString("es-ES", { month: "short", day: "numeric" })}</span>
+                  </div>
+                  <div class="mobile-card-actions">
+                    <button class="btn btn-outline btn-sm" data-action="view" data-id="${s.id}">👁 Ver</button>
+                    <button class="btn btn-outline btn-sm" data-action="edit" data-id="${s.id}">✏️ Editar</button>
+                    <button class="btn btn-outline btn-sm" data-action="delete" data-id="${s.id}" style="color:#EF4444;border-color:#FCA5A5">🗑</button>
+                  </div>
+                </div>
+              `).join("")}
+            </div>
+          `
+        }
+      `;
+    }
+
+    function renderFilters() {
+      return `
+        <div class="filters-panel">
+          <div class="input-group">
+            <label class="label">Estado</label>
+            <select class="select" id="filterStatus">
+              <option value="all" ${state.filterStatus === "all" ? "selected" : ""}>Todos los estados</option>
+              <option value="active" ${state.filterStatus === "active" ? "selected" : ""}>Activa</option>
+              <option value="expired" ${state.filterStatus === "expired" ? "selected" : ""}>Expirada</option>
+              <option value="suspended" ${state.filterStatus === "suspended" ? "selected" : ""}>Suspendida</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label class="label">Tipo de Licencia</label>
+            <select class="select" id="filterType">
+              <option value="all" ${state.filterType === "all" ? "selected" : ""}>Todos los tipos</option>
+              ${Object.entries(LICENSE_CONFIG).map(([k, v]) => `<option value="${k}" ${state.filterType === k ? "selected" : ""}>${v.label} — $${v.price}/${v.period}</option>`).join("")}
+            </select>
+          </div>
+          ${(state.filterStatus !== "all" || state.filterType !== "all") ? '<button class="clear-filters" id="clearFilters">✕ Limpiar filtros</button>' : ""}
+        </div>
+      `;
+    }
+
+    function renderBadge(s) {
+      if (s.status === "expired") return '<span class="badge badge-expired">❌ Expirada</span>';
+      if (s.status === "suspended") return '<span class="badge badge-suspended">⏸ Suspendida</span>';
+      if (isExpiringSoon(s.endDate)) return '<span class="badge badge-expiring">⏰ Por Expirar</span>';
+      return '<span class="badge badge-active">✅ Activa</span>';
+    }
+
+    function renderFormDialog() {
+      const s = state.selectedSalon;
+      const f = state.form;
+      const cfg = LICENSE_CONFIG[f.licenseType];
+      const start = f.startDate ? new Date(f.startDate + "T00:00:00") : new Date();
+      const end = new Date(start);
+      end.setDate(end.getDate() + cfg.durationDays);
+
+      return `
+        <div class="dialog-overlay" id="formOverlay">
+          <div class="dialog">
+            <div class="dialog-header">
+              <div class="dialog-title">🏪 ${s ? "Editar Salón" : "Nuevo Salón"}</div>
+              <div class="dialog-desc">${s ? "Modifica los datos del salón y su licencia" : "Agrega un nuevo salón al sistema Mary Bot"}</div>
+            </div>
+            <div class="dialog-body">
+              <form id="salonForm" style="display:flex;flex-direction:column;gap:16px">
+                <div class="input-group">
+                  <label class="label">🏪 Nombre del Salón *</label>
+                  <input type="text" class="input" id="fName" value="${esc(f.name)}" placeholder="Ej: Nails by María" required>
+                </div>
+                <div class="grid-2">
+                  <div class="input-group">
+                    <label class="label">📞 Teléfono *</label>
+                    <input type="text" class="input" id="fPhone" value="${esc(f.phone)}" placeholder="+1 555 123 4567" required>
+                  </div>
+                  <div class="input-group">
+                    <label class="label">#️⃣ Número Twilio</label>
+                    <input type="text" class="input" id="fTwilio" value="${esc(f.twilioNumber)}" placeholder="+1 555 987 6543">
+                  </div>
+                </div>
+                <div class="grid-2">
+                  <div class="input-group">
+                    <label class="label">👑 Tipo de Licencia *</label>
+                    <select class="select" id="fLicense">
+                      ${Object.entries(LICENSE_CONFIG).map(([k, v]) => `<option value="${k}" ${f.licenseType === k ? "selected" : ""}>${v.label} — $${v.price}/${v.period}</option>`).join("")}
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <label class="label">📅 Fecha de Inicio *</label>
+                    <input type="date" class="input" id="fStart" value="${f.startDate}" required>
+                  </div>
+                </div>
+                <div class="expiry-calc">
+                  ✨ <strong>Fecha de expiración calculada:</strong> <span style="color:#FF1493;font-weight:600">${end.toLocaleDateString("es-ES", { year: "numeric", month: "long", day: "numeric" })}</span>
+                  <span style="color:var(--muted-fg)">(${cfg.durationDays} días)</span>
+                </div>
+                <div class="input-group">
+                  <label class="label">📝 Notas</label>
+                  <textarea class="textarea" id="fNotes" rows="3" placeholder="Notas adicionales sobre este salón...">${esc(f.notes)}</textarea>
+                </div>
+              </form>
+            </div>
+            <div class="dialog-footer">
+              <button class="btn btn-outline" id="formCancel">Cancelar</button>
+              <button class="btn btn-primary" id="formSubmit">${state.saving ? '<span style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top:#fff;border-radius:50%;animation:spin 0.6s linear infinite"></span> Guardando...' : (s ? "Guardar Cambios" : "Crear Salón")}</button>
+            </div>
+          </div>
+        </div>
+        <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+      `;
+    }
+
+    function renderDetailDialog() {
+      const s = state.selectedSalon;
+      if (!s) return "";
+      const cfg = LICENSE_CONFIG[s.licenseType];
+      return `
+        <div class="dialog-overlay" id="detailOverlay">
+          <div class="dialog">
+            <div class="dialog-header">
+              <div class="dialog-title">🏪 ${esc(s.name)}</div>
+              <div class="dialog-desc">Detalles del salón y licencia</div>
+            </div>
+            <div class="dialog-body">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                <div class="info-item"><span class="info-icon">📞</span><div><div class="info-label">Teléfono</div><div class="info-value">${esc(s.phone) || "—"}</div></div></div>
+                <div class="info-item"><span class="info-icon">#️⃣</span><div><div class="info-label">Twilio</div><div class="info-value">${esc(s.twilioNumber) || "—"}</div></div></div>
+                <div class="info-item"><span class="info-icon">👑</span><div><div class="info-label">Licencia</div><div class="info-value">${cfg.label} — $${cfg.price}/${cfg.period}</div></div></div>
+                <div class="info-item"><span class="info-icon">📅</span><div><div class="info-label">Inicio</div><div class="info-value">${s.startDate.toLocaleDateString("es-ES")}</div></div></div>
+                <div class="info-item"><span class="info-icon">🛡️</span><div><div class="info-label">Expiración</div><div class="info-value">${s.endDate.toLocaleDateString("es-ES")}</div></div></div>
+                <div>${renderBadge(s)}</div>
+              </div>
+              ${s.notes ? `<div class="sep"></div><div class="info-item"><span class="info-icon">📝</span><div><div class="info-label">Notas</div><div class="info-value">${esc(s.notes)}</div></div></div>` : ""}
+            </div>
+            <div class="dialog-footer">
+              <button class="btn btn-outline" id="detailClose">Cerrar</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDeleteDialog() {
+      const s = state.selectedSalon;
+      return `
+        <div class="dialog-overlay" id="deleteOverlay">
+          <div class="dialog" style="max-width:420px">
+            <div class="dialog-header">
+              <div class="dialog-title">🗑️ Eliminar Salón</div>
+            </div>
+            <div class="dialog-body">
+              <p style="font-size:14px;color:var(--muted-fg)">
+                ¿Estás seguro de que deseas eliminar <strong style="color:#FF1493">${esc(s?.name)}</strong>?
+                Esta acción no se puede deshacer y el salón será removido del sistema.
+              </p>
+            </div>
+            <div class="dialog-footer">
+              <button class="btn btn-outline" id="deleteCancel">Cancelar</button>
+              <button class="btn btn-danger" id="deleteConfirm">${state.saving ? "Eliminando..." : "Eliminar"}</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ─── Event Attachment ────────────────────────────
+    function attachPanelEvents() {
+      // View tabs
+      document.querySelectorAll("[data-view]").forEach(el => {
+        el.addEventListener("click", () => {
+          state.viewMode = el.dataset.view;
+          render();
+        });
+      });
+
+      // Logout
+      document.getElementById("logoutBtn")?.addEventListener("click", () => {
+        sessionStorage.removeItem("mbp_auth");
+        state.authenticated = false;
+        render();
+      });
+
+      // Search
+      const searchInput = document.getElementById("searchInput");
+      if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+          state.searchTerm = e.target.value;
+          render();
+          document.getElementById("searchInput")?.focus();
+        });
+      }
+      document.getElementById("clearSearch")?.addEventListener("click", () => {
+        state.searchTerm = "";
+        render();
+      });
+
+      // Filters
+      document.getElementById("filterBtn")?.addEventListener("click", () => {
+        state.showFilters = !state.showFilters;
+        render();
+      });
+      document.getElementById("filterStatus")?.addEventListener("change", (e) => {
+        state.filterStatus = e.target.value;
+        render();
+      });
+      document.getElementById("filterType")?.addEventListener("change", (e) => {
+        state.filterType = e.target.value;
+        render();
+      });
+      document.getElementById("clearFilters")?.addEventListener("click", () => {
+        state.filterStatus = "all";
+        state.filterType = "all";
+        render();
+      });
+
+      // Actions (delegated)
+      document.addEventListener("click", handleAction);
+
+      // Form dialog events
+      document.getElementById("formOverlay")?.addEventListener("click", (e) => {
+        if (e.target.id === "formOverlay") { state.formOpen = false; render(); }
+      });
+      document.getElementById("formCancel")?.addEventListener("click", () => {
+        state.formOpen = false; render();
+      });
+      document.getElementById("fLicense")?.addEventListener("change", (e) => {
+        state.form.licenseType = e.target.value;
+        render();
+      });
+      document.getElementById("fStart")?.addEventListener("change", (e) => {
+        state.form.startDate = e.target.value;
+        render();
+      });
+
+      // Detail dialog
+      document.getElementById("detailOverlay")?.addEventListener("click", (e) => {
+        if (e.target.id === "detailOverlay") { state.detailOpen = false; render(); }
+      });
+      document.getElementById("detailClose")?.addEventListener("click", () => {
+        state.detailOpen = false; render();
+      });
+
+      // Delete dialog
+      document.getElementById("deleteOverlay")?.addEventListener("click", (e) => {
+        if (e.target.id === "deleteOverlay") { state.deleteOpen = false; render(); }
+      });
+      document.getElementById("deleteCancel")?.addEventListener("click", () => {
+        state.deleteOpen = false; render();
+      });
+      document.getElementById("deleteConfirm")?.addEventListener("click", confirmDelete);
+    }
+
+    function handleAction(e) {
+      const btn = e.target.closest("[data-action]");
+      if (!btn) return;
+      const action = btn.dataset.action;
+      const id = btn.dataset.id;
+
+      if (action === "create") {
+        state.selectedSalon = null;
+        state.form = { name: "", phone: "", twilioNumber: "", licenseType: "monthly", startDate: new Date().toISOString().split("T")[0], notes: "" };
+        state.formOpen = true;
+        render();
+      } else if (action === "view") {
+        const salon = state.salons.find(s => s.id === id);
+        if (salon) { state.selectedSalon = salon; state.detailOpen = true; render(); }
+      } else if (action === "edit") {
+        const salon = state.salons.find(s => s.id === id);
+        if (salon) {
+          state.selectedSalon = salon;
+          state.form = {
+            name: salon.name, phone: salon.phone, twilioNumber: salon.twilioNumber,
+            licenseType: salon.licenseType, startDate: salon.startDate.toISOString().split("T")[0], notes: salon.notes
+          };
+          state.formOpen = true;
+          render();
+        }
+      } else if (action === "delete") {
+        const salon = state.salons.find(s => s.id === id);
+        if (salon) { state.selectedSalon = salon; state.deleteOpen = true; render(); }
+      }
+    }
+
+    async function confirmDelete() {
+      if (!state.selectedSalon || state.saving) return;
+      state.saving = true;
+      render();
+      try {
+        await deleteDoc(doc(db, "salons", state.selectedSalon.id));
+        showToast("🗑️ Salón eliminado", `"${state.selectedSalon.name}" se ha eliminado del sistema.`);
+        state.deleteOpen = false;
+        state.selectedSalon = null;
+        await loadSalons();
+      } catch (err) {
+        showToast("Error", "No se pudo eliminar el salón.", true);
+      }
+      state.saving = false;
+      render();
+    }
+
+    // ─── Form Submit ─────────────────────────────────
+    document.addEventListener("submit", async (e) => {
+      if (e.target.id !== "salonForm") return;
+      e.preventDefault();
+      if (state.saving) return;
+
+      const name = document.getElementById("fName").value.trim();
+      const phone = document.getElementById("fPhone").value.trim();
+      const twilioNumber = document.getElementById("fTwilio").value.trim();
+      const licenseType = document.getElementById("fLicense").value;
+      const startDate = document.getElementById("fStart").value;
+      const notes = document.getElementById("fNotes").value.trim();
+
+      if (!name || !phone || !startDate) return;
+
+      state.saving = true;
+      render();
+
+      try {
+        if (state.selectedSalon) {
+          const endDate = calcEndDate(new Date(startDate + "T00:00:00"), licenseType);
+          const status = getStatus(endDate);
+          await updateDoc(doc(db, "salons", state.selectedSalon.id), {
+            name, phone, twilioNumber, licenseType, notes,
+            startDate: Timestamp.fromDate(new Date(startDate + "T00:00:00")),
+            endDate: Timestamp.fromDate(endDate),
+            status,
+          });
+          showToast("✅ Salón actualizado", `"${name}" se ha actualizado correctamente.`);
+        } else {
+          const endDate = calcEndDate(new Date(startDate + "T00:00:00"), licenseType);
+          const status = getStatus(endDate);
+          await addDoc(collection(db, "salons"), {
+            name, phone, twilioNumber, licenseType, notes,
+            startDate: Timestamp.fromDate(new Date(startDate + "T00:00:00")),
+            endDate: Timestamp.fromDate(endDate),
+            status,
+            createdAt: Timestamp.now(),
+          });
+          showToast("✅ Salón creado", `"${name}" se ha agregado al sistema.`);
+        }
+        state.formOpen = false;
+        state.selectedSalon = null;
+        await loadSalons();
+      } catch (err) {
+        showToast("Error", "No se pudo guardar el salón. Intenta de nuevo.", true);
+      }
+      state.saving = false;
+      render();
+    });
+
+    // ─── Data ────────────────────────────────────────
+    function getFilteredSalons() {
+      let result = [...state.salons];
+      if (state.searchTerm.trim()) {
+        const term = state.searchTerm.toLowerCase();
+        result = result.filter(s => s.name.toLowerCase().includes(term) || s.phone.includes(term) || s.twilioNumber.includes(term));
+      }
+      if (state.filterStatus !== "all") result = result.filter(s => s.status === state.filterStatus);
+      if (state.filterType !== "all") result = result.filter(s => s.licenseType === state.filterType);
+      return result;
+    }
+
+    async function loadSalons() {
+      state.loading = true;
+      try {
+        const q = query(collection(db, "salons"), orderBy("createdAt", "desc"));
+        const snapshot = await getDocs(q);
+        const all = snapshot.docs.map(d => salonFromDoc(d.id, d.data()));
+        // Auto-refresh statuses
+        const now = new Date();
+        all.forEach(s => {
+          if (s.endDate.getTime() < now.getTime() && s.status !== "suspended") s.status = "expired";
+        });
+        state.allSalons = all;
+        state.salons = all;
+      } catch (err) {
+        showToast("Error", "No se pudieron cargar los salones. Verifica la conexión a Firebase.", true);
+      }
+      state.loading = false;
+      render();
+    }
+
+    // ─── Toast ───────────────────────────────────────
+    function showToast(title, desc, isError = false) {
+      const container = document.getElementById("toasts");
+      if (!container) return;
+      const toast = document.createElement("div");
+      toast.className = "toast";
+      if (isError) toast.style.borderColor = "#FCA5A5";
+      toast.innerHTML = `<div><div class="toast-title">${esc(title)}</div>${desc ? `<div class="toast-desc">${esc(desc)}</div>` : ""}</div>`;
+      container.appendChild(toast);
+      setTimeout(() => { toast.style.opacity = "0"; toast.style.transition = "opacity 0.3s"; setTimeout(() => toast.remove(), 300); }, 4000);
+    }
+
+    // ─── Utils ───────────────────────────────────────
+    function esc(str) {
+      if (!str) return "";
+      const div = document.createElement("div");
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function fmtDate(date) {
+      return date.toLocaleDateString("es-ES", { month: "short", day: "numeric", year: "numeric" });
+    }
+
+    // ─── Init ────────────────────────────────────────
+    if (sessionStorage.getItem("mbp_auth") === "true") {
+      state.authenticated = true;
+      loadSalons();
+    }
+    render();
+  </script>
+</body>
+</html>
