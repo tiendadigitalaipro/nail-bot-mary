@@ -163,17 +163,43 @@ Somos un estudio de desarrollo de software especializado en automatización con 
 
 ---
 
-## 🎬 ¿Quieres Ver Mary en Acción?
+## 🎬 Videos Demo — Mary Bot en Acción
 
-### Video Demo Gratuito
+### 4 videos disponibles ahora mismo 👇
 
-Hemos preparado un **video demo de 2 minutos** donde puedes escuchar exactamente cómo suena Mary al contestar una llamada real, cómo agenda una cita y cómo llega la notificación de WhatsApp.
+---
 
-> **Solicita el video demo** escribiéndonos — te lo enviamos de inmediato, sin compromiso.
+### 🎥 Video 1 — Login y Dashboard
+> Acceso al panel de administración y vista general del dashboard de Mary Bot
+
+**[⬇️ Descargar Video 1 — Login + Dashboard](https://github.com/tiendadigitalaipro/nail-bot-mary/raw/main/video-demo/video1-login-dashboard.mp4)**
+
+---
+
+### 🎥 Video 2 — Agregar Nuevo Salón
+> Cómo registrar y configurar un nuevo salón en la plataforma
+
+**[⬇️ Descargar Video 2 — Agregar Salón](https://github.com/tiendadigitalaipro/nail-bot-mary/raw/main/video-demo/video2-agregar-salon.mp4)**
+
+---
+
+### 🎥 Video 3 — Gestión de Licencias
+> Administración de licencias activas, estados y renovaciones
+
+**[⬇️ Descargar Video 3 — Licencias](https://github.com/tiendadigitalaipro/nail-bot-mary/raw/main/video-demo/video3-licencias.mp4)**
+
+---
+
+### 🎥 Video 4 — Vista Mobile
+> Experiencia completa del panel en dispositivos móviles
+
+**[⬇️ Descargar Video 4 — Mobile](https://github.com/tiendadigitalaipro/nail-bot-mary/raw/main/video-demo/video4-mobile.mp4)**
+
+---
 
 ### Demo en Vivo (opcional)
 
-Si después de ver el video quieres escuchar a Mary directamente en tu número de teléfono, podemos coordinar una **llamada demo de 1 minuto** donde Mary contesta y tú experimentas la tecnología en vivo.
+Si quieres escuchar a Mary directamente en tu número de teléfono, podemos coordinar una **llamada demo de 1 minuto** donde Mary contesta y tú experimentas la tecnología en vivo.
 
 ---
 
